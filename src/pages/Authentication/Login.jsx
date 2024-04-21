@@ -1,6 +1,84 @@
-import React from "react";
+import AuthService from "@services/AuthService";
+import SweetAlert from "@shared/components/Modal/SweetAlert";
+
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+
+// create schema for validator with zod
+const schema = z.object({
+  username: z.string().min(1, "Username cannot be empty"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
 
 export default function Login() {
+  // use service and sweet alert with useMemo -> prevent re-render
+  const authService = useMemo(() => AuthService(), []);
+  const sweetAlert = useMemo(() => SweetAlert(), []);
+  // use navigate hook -> redirect
+  const navigate = useNavigate();
+
+  // use form hook with schema from zod resolver
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+  } = useForm({
+    mode: "onChange",
+    resolver: zodResolver(schema),
+    defaultValues: {
+      username: "superadmin",
+      password: "password",
+    },
+  });
+
+  // handle submit login
+  const onSubmit = async (data) => {
+    try {
+      const response = await authService.login(data);
+
+      if (response && response.statusCode === 200) {
+        // save user to local storage
+        localStorage.setItem("user", JSON.stringify(response.data));
+
+        // redirect
+        navigate("/dashboard");
+
+        // notification
+        sweetAlert.success("Login successfully, welcome back !");
+      }
+    } catch (error) {
+      // notification
+      sweetAlert.error("Username or password is incorrect !");
+    }
+
+    // reset form
+    reset();
+  };
+
+  // use effect -> check token always when service or route change
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      const checkToken = async () => {
+        const isValidToken = await authService.validateToken();
+
+        if (isValidToken) {
+          // notification
+          sweetAlert.info("Already logged in, please logout first !");
+
+          // redirect
+          navigate("/dashboard");
+        }
+      };
+      checkToken();
+    }
+  }, [authService, navigate]);
+
   return (
     <>
       {/* Login Section */}
@@ -14,7 +92,7 @@ export default function Login() {
             <div className="flex flex-col items-center">
               <h1 className="text-3xl font-semibold pb-6">Sign In</h1>
               <h2 className="text-2xl font-semibold pb-2">
-                Welcome to Materio! 👋🏻
+                Welcome to WMB ! 👋🏻
               </h2>
               <p className="text-sm pb-5">
                 Please sign-in to your account and start the adventure
@@ -22,39 +100,56 @@ export default function Login() {
             </div>
 
             {/* Login Form */}
-            <form action="">
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="form-group">
                 <div className="form-field">
                   {/* Username Field */}
-                  <label className="form-label">Email address</label>
+                  <label className="form-label">Username</label>
                   <input
+                    {...register("username")}
                     placeholder="superadmin"
-                    type="email"
-                    className="input max-w-full"
+                    type="text"
+                    className={`input max-w-ful ${
+                      errors.username && "input-error"
+                    }`}
                   />
-                  <label className="form-label">
-                    <span className="form-label-alt">
-                      Please enter a valid email.
-                    </span>
-                  </label>
+                  {errors.username && (
+                    <label className="form-label">
+                      <span className="form-label-alt text-error">
+                        {errors.username.message}
+                      </span>
+                    </label>
+                  )}
                 </div>
 
                 {/* Password Field */}
                 <div className="form-field">
                   <label className="form-label">Password</label>
-                  <div className="form-control">
-                    <input
-                      placeholder="password"
-                      type="password"
-                      className="input max-w-full"
-                    />
-                  </div>
+                  <input
+                    {...register("password")}
+                    placeholder="password"
+                    type="password"
+                    className={`input max-w-ful ${
+                      errors.password && "input-error"
+                    }`}
+                  />
+                  {errors.password && (
+                    <label className="form-label">
+                      <span className="form-label-alt text-error">
+                        {errors.password.message}
+                      </span>
+                    </label>
+                  )}
                 </div>
 
                 {/* Button Sign In */}
                 <div className="form-field pt-5">
                   <div className="form-control justify-between">
-                    <button type="button" className="btn btn-primary w-full">
+                    <button
+                      type="submit"
+                      className="btn btn-primary w-full"
+                      disabled={!isValid}
+                    >
                       Sign in
                     </button>
                   </div>

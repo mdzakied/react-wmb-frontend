@@ -8,6 +8,9 @@ dependencies:
   '@hookform/resolvers':
     specifier: ^3.3.4
     version: 3.3.4(react-hook-form@7.51.3)
+  '@sweetalert2/theme-dark':
+    specifier: ^5.0.16
+    version: 5.0.16
   axios:
     specifier: ^1.6.8
     version: 1.6.8
@@ -32,6 +35,9 @@ dependencies:
   sass:
     specifier: ^1.75.0
     version: 1.75.0
+  sweetalert2:
+    specifier: ^11.10.8
+    version: 11.10.8
   zod:
     specifier: ^3.22.4
     version: 3.22.5
@@ -771,6 +777,10 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@sweetalert2/theme-dark@5.0.16:
+    resolution: {integrity: sha512-SFXEVfp9jmaBLhYEeRilrcpQP/sQimfjtZdvazJ+l5jEdNVKDkPD/CD3T7V8VqUqk/q2zUBSvr0WOMrHoAvfCA==}
+    dev: false
 
   /@types/babel__core@7.20.5:
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -2841,6 +2851,10 @@ packages:
   /supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  /sweetalert2@11.10.8:
+    resolution: {integrity: sha512-oAkYROBfXBY+4sVbQEIcN+ZxAx69lsmz5WEBwdEpyS4m59vOBNlRU5/fJpAI1MVfiDwFZiGwVzB/KBpOyfLNtg==}
+    dev: false
 
   /tailwindcss@3.4.3:
     resolution: {integrity: sha512-U7sxQk/n397Bmx4JHbJx/iSOOv5G+II3f1kpLpY2QeUv5DcPdcTsYLlusZfq1NthHS1c1cZoyFmmkex1rzke0A==}

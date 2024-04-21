@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
+    "@sweetalert2/theme-dark": "^5.0.16",
     "axios": "^1.6.8",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
@@ -19,6 +20,7 @@
     "react-router-dom": "^6.22.3",
     "rippleui": "^1.12.1",
     "sass": "^1.75.0",
+    "sweetalert2": "^11.10.8",
     "zod": "^3.22.4"
   },
   "devDependencies": {

@@ -1,6 +1,42 @@
-import { NavLink } from "react-router-dom";
+import SweetAlert from "@shared/components/Modal/SweetAlert";
+
+import { useMemo } from "react";
+
+import { NavLink, useNavigate } from "react-router-dom";
+
+import Swal from "sweetalert2/dist/sweetalert2.js";
 
 export default function Sidebar() {
+  // use sweet alert with useMemo -> prevent re-render
+  const sweetAlert = useMemo(() => SweetAlert(), []);
+  // use navigate hook -> redirect
+  const navigate = useNavigate();
+
+  // handle logout
+  const handleLogout = () => {
+    // alert confirmation with sweetalert
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this !",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#0072f5",
+      cancelButtonColor: "#f31260",
+      confirmButtonText: "Yes, logout !",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // remove user from local storage
+        localStorage.removeItem("user");
+
+        // redirect
+        navigate("/login");
+
+        // notification
+        sweetAlert.success("Logout success !");
+      }
+    });
+  };
+
   return (
     <>
       {/* Sidebar Mobile Config */}
@@ -100,7 +136,7 @@ export default function Sidebar() {
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                          d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
                         />
                       </svg>
                       <span>Menu</span>
@@ -283,7 +319,7 @@ export default function Sidebar() {
                     </li>
                   </NavLink>
 
-                  <li className="menu-item">
+                  <li onClick={handleLogout} className="menu-item">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
