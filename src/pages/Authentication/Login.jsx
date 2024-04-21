@@ -31,10 +31,10 @@ export default function Login() {
   } = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
-    defaultValues: {
-      username: "superadmin",
-      password: "password",
-    },
+    // defaultValues: {
+    //   username: "superadmin",
+    //   password: "password",
+    // },
   });
 
   // handle submit login
@@ -109,7 +109,7 @@ export default function Login() {
                     {...register("username")}
                     placeholder="superadmin"
                     type="text"
-                    className={`input max-w-ful ${
+                    className={`input max-w-full${
                       errors.username && "input-error"
                     }`}
                   />
@@ -129,7 +129,7 @@ export default function Login() {
                     {...register("password")}
                     placeholder="password"
                     type="password"
-                    className={`input max-w-ful ${
+                    className={`input max-w-full${
                       errors.password && "input-error"
                     }`}
                   />

@@ -16,9 +16,22 @@ const AuthService = () => {
     }
   };
 
+  const registerAdmin = async (payload) => {
+    const { data } = await axiosInstance.post("/auth/register/admin", payload);
+    return data;
+  };
+
+  const registerCustomer = async (payload) => {
+    const { data } = await axiosInstance.post("/auth/register", payload);
+    return data;
+  };
+
+
   return {
     login,
     validateToken,
+    registerAdmin,
+    registerCustomer
   };
 };
 

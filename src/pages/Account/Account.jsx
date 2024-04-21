@@ -39,7 +39,6 @@ export default function Account() {
       const currentUser = async () => {
         // get user from local storage
         const data = await userService.getById(localStorage.getItem("user"));
-        console.log(data);
       };
       currentUser();
     }

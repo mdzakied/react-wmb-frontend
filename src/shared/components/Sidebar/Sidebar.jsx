@@ -7,10 +7,14 @@ import { NavLink, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 
 export default function Sidebar() {
+  
   // use sweet alert with useMemo -> prevent re-render
   const sweetAlert = useMemo(() => SweetAlert(), []);
   // use navigate hook -> redirect
   const navigate = useNavigate();
+
+  // get current user from local storage
+  const currentUser = JSON.parse(localStorage.getItem("user"));
 
   // handle logout
   const handleLogout = () => {
@@ -143,6 +147,7 @@ export default function Sidebar() {
                     </NavLink>
                   </li>
 
+                  {/* Table */}
                   <li>
                     <NavLink
                       to={"/dashboard/table"}
@@ -167,7 +172,35 @@ export default function Sidebar() {
                       <span>Table</span>
                     </NavLink>
                   </li>
-                  <input type="checkbox" id="menu-1" className="menu-toggle" />
+
+                  {/* User */}
+                  <li>
+                    <NavLink
+                      to={"/dashboard/user"}
+                      className={({ isActive }) =>
+                        isActive ? "menu-item menu-active" : "menu-item"
+                      }
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                        />
+                      </svg>
+                      <span>User</span>
+                    </NavLink>
+                  </li>
+
+                  {/* User v2 */}
+                  {/* <input type="checkbox" id="menu-1" className="menu-toggle" />
                   <label className="menu-item justify-between" htmlFor="menu-1">
                     <div className="flex gap-2">
                       <svg
@@ -255,7 +288,7 @@ export default function Sidebar() {
                         </label>
                       </NavLink>
                     </div>
-                  </div>
+                  </div> */}
                 </ul>
               </section>
 
@@ -355,7 +388,7 @@ export default function Sidebar() {
                   </div>
 
                   <div className="flex flex-col">
-                    <span>Super Admin</span>
+                    <span>{currentUser ? currentUser.username : ""}</span>
                   </div>
                 </div>
               </label>
