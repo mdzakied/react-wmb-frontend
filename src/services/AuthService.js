@@ -1,4 +1,4 @@
-import axiosInstance from "../api/axiosInstace";
+import axiosInstance from "../api/axiosInstance";
 
 const AuthService = () => {
   const login = async (payload) => {

@@ -33,7 +33,7 @@ export default function WebLayout() {
           </div>
 
           {/* Outlet or Child Component */}
-          <div className="my-4 grid grid-cols-2 gap-4">
+          <div className="my-4 grid gap-4">
             <Outlet />
           </div>
         </div>

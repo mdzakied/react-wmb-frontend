@@ -1,9 +1,25 @@
+// tailwind.config
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import '@sweetalert2/theme-dark/dark.scss';
+// sweetalert2 theme dark
+@import "@sweetalert2/theme-dark/dark.scss";
 
+// disable arrow on input number
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+// styles
 .swal2-modal {
-    background-color: #232323 !important;
+  background-color: #232323 !important;
 }

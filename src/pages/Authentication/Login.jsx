@@ -1,13 +1,12 @@
 import AuthService from "@services/AuthService";
 import SweetAlert from "@shared/components/Modal/SweetAlert";
 
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 
 // create schema for validator with zod
 const schema = z.object({
@@ -19,6 +18,7 @@ export default function Login() {
   // use service and sweet alert with useMemo -> prevent re-render
   const authService = useMemo(() => AuthService(), []);
   const sweetAlert = useMemo(() => SweetAlert(), []);
+
   // use navigate hook -> redirect
   const navigate = useNavigate();
 
@@ -43,7 +43,7 @@ export default function Login() {
       const response = await authService.login(data);
 
       if (response && response.statusCode === 200) {
-        // save user to local storage
+        // save user to local storage -> json stringify
         localStorage.setItem("user", JSON.stringify(response.data));
 
         // redirect
