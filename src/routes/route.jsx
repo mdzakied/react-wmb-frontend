@@ -2,7 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 
 import Login from "@pages/Authentication/Login";
-import WebLayout from "@layouts/WebLayout";
+import Layout from "@layouts/Layout";
 import Dashboard from "@pages/Dashboard/Dashboard";
 import Menu from "@pages/Menu/Menu";
 import Table from "@pages/Table/Table";
@@ -26,8 +26,12 @@ const Router = createBrowserRouter([
   {
     path: "dashboard",
     element: (
+      // <>
+      //   <Layout />
+      // </>
+
       <ProtectedRoute>
-        <WebLayout />
+        <Layout />
       </ProtectedRoute>
     ),
     children: [

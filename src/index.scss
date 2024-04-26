@@ -20,6 +20,29 @@ input[type="number"] {
 }
 
 // styles
+$dark: #1f1d2b !important;
+$orange: #ea7c69 !important;
+
+html {
+  background-color: #252836 !important;
+}
+
+.bg-dark {
+  background-color: $dark;
+}
+
+// tailwind
+.menu-active {
+  background-color: $orange;
+}
+
+.divider-title {
+  margin-top: 0.3rem;
+  border-bottom: 2px solid white;
+  border-radius: 50px 50px;
+}
+
+// sweetalert2
 .swal2-modal {
   background-color: #232323 !important;
 }
