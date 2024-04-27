@@ -90,7 +90,7 @@ export default function Login() {
         <div className="bg-dark rounded-2xl  p-8 shadow-lg">
           <div className="mx-auto flex w-full max-w-sm flex-col gap-6">
             {/* Title Form */}
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center text-center">
               <h1 className="text-3xl font-semibold pb-6">Sign In</h1>
               <h2 className="text-2xl font-semibold pb-2">
                 Welcome to WMB ! 👋🏻
