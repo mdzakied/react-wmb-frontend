@@ -78,7 +78,7 @@ export default function Login() {
       };
       checkToken();
     }
-  }, [authService, navigate]);
+  }, [authService, sweetAlert, navigate]);
 
   return (
     <>
