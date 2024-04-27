@@ -1,11 +1,13 @@
-import AuthService from "@services/AuthService";
-import SweetAlert from "@shared/components/Modal/SweetAlert";
-
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import AuthService from "@services/AuthService";
+import SweetAlert from "@shared/components/Modal/SweetAlert";
 
 // create schema for validator with zod
 const schema = z.object({
@@ -13,7 +15,6 @@ const schema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function AdminForm() {
   // Access the client
@@ -37,7 +38,7 @@ export default function AdminForm() {
   // handle close modal
   const handleCloseModal = () => {
     document.getElementById("modal-register-admin").checked = false;
-    //
+    // reset form
     reset();
   };
 
@@ -87,7 +88,7 @@ export default function AdminForm() {
   return (
     <>
       {/* Button Modal */}
-      <label className="btn btn-outline-primary" htmlFor="modal-register-admin">
+      <label className="btn bg-orange" htmlFor="modal-register-admin">
         Add Admin
       </label>
       <input
@@ -99,7 +100,7 @@ export default function AdminForm() {
       {/* Modal */}
       <div className="modal">
         <label className="modal-overlay" htmlFor="modal-register-admin"></label>
-        <div className="modal-content flex flex-col gap-5">
+        <div className="modal-content rounded-2xl flex flex-col gap-5">
           {/* Close Button Modal */}
           <label
             htmlFor="modal-register-admin"
@@ -122,16 +123,16 @@ export default function AdminForm() {
           </label>
 
           {/* Form */}
-          <div className="bg-gray-3 p-8 shadow-lg">
+          <div className="bg-gray-3 rounded-2xl p-8 shadow-lg">
             <div className="mx-auto flex w-full max-w-sm flex-col gap-6">
               {/* Title Form */}
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col text-center items-center">
                 <h1 className="text-3xl font-semibold pb-6">Sign Up</h1>
                 <h2 className="text-2xl font-semibold pb-2">
                   Adventure starts here 🚀
                 </h2>
                 <p className="text-sm pb-5">
-                  Make your <span className="text-primary">admin </span>
+                  Make your <span className="text-orange">admin </span>
                   account for your app management !
                 </p>
               </div>
@@ -141,18 +142,18 @@ export default function AdminForm() {
                 <div className="form-group">
                   <div className="form-field">
                     {/* Username Field */}
-                    <label className="form-label">Username</label>
+                    <label className="form-label mb-1">Username</label>
                     <input
                       {...register("username")}
                       placeholder="username"
                       type="text"
-                      className={`input max-w-full${
+                      className={`input bg-grey max-w-full${
                         errors.username && "input-error"
                       }`}
                     />
                     {errors.username && (
                       <label className="form-label">
-                        <span className="form-label-alt text-error">
+                        <span className="form-label-alt text-red">
                           {errors.username.message}
                         </span>
                       </label>
@@ -161,18 +162,18 @@ export default function AdminForm() {
 
                   {/* Password Field */}
                   <div className="form-field">
-                    <label className="form-label">Password</label>
+                    <label className="form-label mb-1">Password</label>
                     <input
                       {...register("password")}
                       placeholder="********"
                       type="password"
-                      className={`input max-w-full${
+                      className={`input bg-grey max-w-full${
                         errors.password && "input-error"
                       }`}
                     />
                     {errors.password && (
                       <label className="form-label">
-                        <span className="form-label-alt text-error">
+                        <span className="form-label-alt text-red">
                           {errors.password.message}
                         </span>
                       </label>
@@ -184,7 +185,7 @@ export default function AdminForm() {
                     <div className="form-control justify-between">
                       <button
                         type="submit"
-                        className="btn btn-primary w-full"
+                        className="btn bg-orange w-full"
                         disabled={!isValid}
                       >
                         Sign Up

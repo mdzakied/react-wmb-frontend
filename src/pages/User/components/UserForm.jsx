@@ -1,15 +1,14 @@
 import UserService from "@services/UserService";
 import SweetAlert from "@shared/components/Modal/SweetAlert";
 
-import { useState, useMemo, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import {useMemo, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useParams, Link, useNavigate } from "react-router-dom";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {useMutation, useQueryClient } from "@tanstack/react-query";
 
 // create schema for validator with zod
 const schema = z.object({
@@ -84,6 +83,7 @@ export default function UserForm() {
     if (id) {
       const getUserById = async () => {
         try {
+          // set data to form
           const response = await userService.getById(id);
           const currentUser = response.data;
           setValue("id", currentUser.id);
@@ -146,13 +146,13 @@ export default function UserForm() {
             <div className="bg-gray-3 p-8 shadow-lg">
               <div className="mx-auto flex w-full max-w-sm flex-col gap-6">
                 {/* Title Form */}
-                <div className="flex flex-col items-center">
-                  <h1 className="text-3xl font-semibold pb-6">Sign Up #</h1>
+                <div className="flex flex-col text-center items-center">
+                  <h1 className="text-3xl font-semibold pb-6">Edit</h1>
                   <h2 className="text-2xl font-semibold pb-2">
-                    Adventure starts here 🚀
+                    Update here ✏️
                   </h2>
                   <p className="text-sm pb-5">
-                    Make your <span className="text-primary">admin </span>
+                    Update your <span className="text-orange">user </span>
                     account for your app management !
                   </p>
                 </div>
@@ -162,18 +162,18 @@ export default function UserForm() {
                   <div className="form-group">
                     <div className="form-field">
                       {/* Name Field */}
-                      <label className="form-label">Name</label>
+                      <label className="form-label mb-1">Name</label>
                       <input
                         {...register("name")}
                         placeholder="name"
                         type="text"
-                        className={`input max-w-full ${
+                        className={`input bg-grey max-w-full ${
                           errors.name && "input-error"
                         }`}
                       />
                       {errors.name && (
                         <label className="form-label">
-                          <span className="form-label-alt text-error">
+                          <span className="form-label-alt text-red">
                             {errors.name.message}
                           </span>
                         </label>
@@ -182,18 +182,18 @@ export default function UserForm() {
 
                     {/* Phone Number Field */}
                     <div className="form-field">
-                      <label className="form-label">Phone Number</label>
+                      <label className="form-label mb-1">Phone Number</label>
                       <input
                         {...register("phoneNumber")}
                         placeholder="08xxxxxxxxx"
                         type="number"
-                        className={`input max-w-full ${
+                        className={`input bg-grey max-w-full ${
                           errors.phoneNumber && "input-error"
                         }`}
                       />
                       {errors.phoneNumber && (
                         <label className="form-label">
-                          <span className="form-label-alt text-error">
+                          <span className="form-label-alt text-red">
                             {errors.phoneNumber.message}
                           </span>
                         </label>
@@ -205,7 +205,7 @@ export default function UserForm() {
                       <div className="form-control justify-between">
                         <button
                           type="submit"
-                          className="btn btn-primary w-full"
+                          className="btn bg-orange w-full"
                         >
                           Save
                         </button>

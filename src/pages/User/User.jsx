@@ -9,36 +9,30 @@ export default function User() {
 
   return (
     <>
-      <section id="userAdmin">
-        {/* Title */}
-        <div>
-          <h1 className="text-2xl font-semibold">User</h1>
-        </div>
+      {/* Tittle */}
+      <div>
+        <h1 className="text-2xl font-semibold mb-2">User</h1>
+        <div className="divider-title"></div>
+      </div>
 
-        {/* Content */}
-        {/* User Modal Form */}
-        <div className="flex justify-end gap-4 py-4">
-          {/* Check Authorization for Add Admin */}
-          {currentUser.roles[0] === "ROLE_SUPER_ADMIN" ? (
-            <>
-              <AdminModalForm />
-              <CustomerModalForm />
-            </>
-          ) : (
-            <></>
-          )}
-
-          {/* Check Authorization for Add Customer */}
-          {currentUser.roles[0] === "ROLE_ADMIN" ? (
+      {/* User Modal Form */}
+      <div className="flex justify-end gap-4 pt-6">
+        {/* Check Authorization for Add Admin */}
+        {currentUser.roles[0] === "ROLE_SUPER_ADMIN" ? (
+          <>
+            <AdminModalForm />
             <CustomerModalForm />
-          ) : (
-            <></>
-          )}
-        </div>
+          </>
+        ) : (
+          <></>
+        )}
 
-        {/* User List */}
-        <UserList />
-      </section>
+        {/* Check Authorization for Add Customer */}
+        {currentUser.roles[0] === "ROLE_ADMIN" ? <CustomerModalForm /> : <></>}
+      </div>
+
+      {/* User List */}
+      <UserList />
     </>
   );
 }

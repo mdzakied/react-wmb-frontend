@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 
 import Login from "@pages/Authentication/Login";
@@ -8,10 +8,10 @@ import Menu from "@pages/Menu/Menu";
 import Table from "@pages/Table/Table";
 
 import User from "@pages/User/User";
+import UserForm from "@pages/User/components/UserForm";
 
 import Transaction from "@pages/Transaction/Transaction";
 import Account from "@pages/Account/Account";
-import UserForm from "@pages/User/components/UserForm";
 
 import Error404 from "@pages/Error/Error404";
 

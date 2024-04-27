@@ -97,7 +97,7 @@ export default function Layout() {
           <Sidebar />
 
           {/* Outlet or Child Component */}
-          <div className="my-4 grid gap-4 ml-7 py-6 w-full">
+          <div id="contentPage" className=" grid gap-4 mx-7 py-6 w-full">
             <Outlet />
           </div>
         </div>

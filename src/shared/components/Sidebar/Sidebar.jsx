@@ -5,7 +5,6 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 
 import SweetAlert from "@shared/components/Modal/SweetAlert";
 
-
 export default function Sidebar() {
   // use sweet alert with useMemo -> prevent re-render
   const sweetAlert = useMemo(() => SweetAlert(), []);
@@ -23,8 +22,8 @@ export default function Sidebar() {
       text: "You won't be able to revert this !",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#ea7c69 ",
-      cancelButtonColor: "#ff7ca3",
+      confirmButtonColor: "#0072f5",
+      cancelButtonColor: "#f31260",
       confirmButtonText: "Yes, logout !",
     }).then((result) => {
       if (result.isConfirmed) {
