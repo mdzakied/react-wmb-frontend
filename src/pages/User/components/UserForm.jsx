@@ -1,6 +1,3 @@
-import UserService from "@services/UserService";
-import SweetAlert from "@shared/components/Modal/SweetAlert";
-
 import {useMemo, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -9,6 +6,9 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {useMutation, useQueryClient } from "@tanstack/react-query";
+
+import UserService from "@services/UserService";
+import SweetAlert from "@shared/components/Modal/SweetAlert";
 
 // create schema for validator with zod
 const schema = z.object({
@@ -37,7 +37,7 @@ export default function UserForm() {
     register,
     handleSubmit,
     setValue,
-    formState: { errors, isValid },
+    formState: { errors},
     reset,
   } = useForm({
     mode: "onChange",
