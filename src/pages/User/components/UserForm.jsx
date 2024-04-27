@@ -118,7 +118,7 @@ export default function UserForm() {
         />
         <div className="modal">
           <label className="modal-overlay" htmlFor="modal-update-user"></label>
-          <div className="modal-content flex flex-col gap-5">
+          <div className="modal-content rounded-2xl flex flex-col gap-5">
             {/* Close Button Modal */}
             <Link to={"/dashboard/user"}>
               <label
@@ -143,11 +143,11 @@ export default function UserForm() {
             </Link>
 
             {/* Form */}
-            <div className="bg-gray-3 p-8 shadow-lg">
+            <div className="bg-gray-3 rounded-2xl p-8 shadow-lg">
               <div className="mx-auto flex w-full max-w-sm flex-col gap-6">
                 {/* Title Form */}
                 <div className="flex flex-col text-center items-center">
-                  <h1 className="text-3xl font-semibold pb-6">Edit</h1>
+                  <h1 className="text-3xl font-semibold pb-6">Edit User</h1>
                   <h2 className="text-2xl font-semibold pb-2">
                     Update here ✏️
                   </h2>

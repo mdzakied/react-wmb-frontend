@@ -161,7 +161,7 @@ export default function UserList() {
       </div>
 
       {/* Table */}
-      <div className="flex w-full overflow-x-auto">
+      <div className="flex w-full rounded-2xl overflow-x-auto">
         <table className="table-hover bg-grey table">
           <thead>
             <tr>
