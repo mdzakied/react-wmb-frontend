@@ -23,6 +23,7 @@ input[type="number"] {
 $dark: #1f1d2b !important;
 $orange: #ea7c69 !important;
 $red: #ff7ca3 !important;
+$grey: #2d303e !important;
 
 html {
   background-color: #252836 !important;
@@ -34,6 +35,10 @@ html {
 
 .bg-orange {
   background-color: $orange;
+}
+
+.bg-grey {
+  background-color: $grey;
 }
 
 .text-orange {

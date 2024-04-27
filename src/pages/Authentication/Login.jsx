@@ -111,7 +111,7 @@ export default function Login() {
                     {...register("username")}
                     placeholder="username"
                     type="text"
-                    className={`input max-w-full${
+                    className={`input bg-grey max-w-full${
                       errors.username && "input-error"
                     }`}
                   />
@@ -131,7 +131,7 @@ export default function Login() {
                     {...register("password")}
                     placeholder="password"
                     type="password"
-                    className={`input max-w-full${
+                    className={`input bg-grey max-w-full${
                       errors.password && "input-error"
                     }`}
                   />
