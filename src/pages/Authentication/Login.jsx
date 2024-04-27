@@ -1,5 +1,6 @@
 import AuthService from "@services/AuthService";
 import SweetAlert from "@shared/components/Modal/SweetAlert";
+import NotificationToastify from "@shared/components/Notification/NotificationToastify";
 
 import { useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +8,8 @@ import { useForm } from "react-hook-form";
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import LoginImg from "@assets/images/login.png";
 
 // create schema for validator with zod
 const schema = z.object({
@@ -31,10 +34,6 @@ export default function Login() {
   } = useForm({
     mode: "onChange",
     resolver: zodResolver(schema),
-    // defaultValues: {
-    //   username: "superadmin",
-    //   password: "password",
-    // },
   });
 
   // handle submit login
@@ -53,8 +52,13 @@ export default function Login() {
         sweetAlert.success("Login successfully, welcome back !");
       }
     } catch (error) {
-      // notification
-      sweetAlert.error("Username or password is incorrect !");
+      if (error.response.status == 500) {
+        // notification
+        sweetAlert.error("Internal server error !");
+      } else {
+        // notification
+        sweetAlert.error("Username or password is incorrect !");
+      }
     }
 
     // reset form
@@ -69,7 +73,7 @@ export default function Login() {
 
         if (isValidToken) {
           // notification
-          sweetAlert.info("Already logged in, please logout first !");
+          sweetAlert.info("You are already logged in !");
 
           // redirect
           navigate("/dashboard");
@@ -86,7 +90,7 @@ export default function Login() {
         id="login"
         className="rounded-xl flex justify-center items-center w-100 h-screen"
       >
-        <div className="bg-gray-3 p-8 shadow-lg">
+        <div className="bg-dark rounded-2xl  p-8 shadow-lg">
           <div className="mx-auto flex w-full max-w-sm flex-col gap-6">
             {/* Title Form */}
             <div className="flex flex-col items-center">
@@ -95,27 +99,32 @@ export default function Login() {
                 Welcome to WMB ! 👋🏻
               </h2>
               <p className="text-sm pb-5">
-                Please sign-in to your account and start the adventure
+                Please <span className="text-orange">sign-in</span>  to your account and start the adventure
               </p>
             </div>
+
+            {/* Image */}
+            {/* <div className="flex justify-center w-100">
+              <img src={LoginImg} alt="LoginImg" />
+            </div> */}
 
             {/* Login Form */}
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="form-group">
                 <div className="form-field">
                   {/* Username Field */}
-                  <label className="form-label">Username</label>
+                  <label className="form-label mb-1">Username</label>
                   <input
                     {...register("username")}
-                    placeholder="superadmin"
+                    placeholder="username"
                     type="text"
                     className={`input max-w-full${
                       errors.username && "input-error"
                     }`}
                   />
                   {errors.username && (
-                    <label className="form-label">
-                      <span className="form-label-alt text-error">
+                    <label className="form-label mb-1">
+                      <span className="form-label-alt text-red ">
                         {errors.username.message}
                       </span>
                     </label>
@@ -135,7 +144,7 @@ export default function Login() {
                   />
                   {errors.password && (
                     <label className="form-label">
-                      <span className="form-label-alt text-error">
+                      <span className="form-label-alt text-red">
                         {errors.password.message}
                       </span>
                     </label>
@@ -147,7 +156,7 @@ export default function Login() {
                   <div className="form-control justify-between">
                     <button
                       type="submit"
-                      className="btn btn-primary w-full"
+                      className="btn btn-primary bg-orange w-full"
                       disabled={!isValid}
                     >
                       Sign in

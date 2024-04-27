@@ -10,16 +10,21 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 // create schema for validator with zod
 const schema = z.object({
-  name: z.any(),
-  phoneNumber: z.any(),
+  search: z.any(),
 });
 
 export default function UserList() {
+  // Access the client
+  const queryClient = useQueryClient();
+
   // use state for data users and search params
-  const [users, setUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // use service and sweet alert with useMemo -> prevent re-render
@@ -32,72 +37,99 @@ export default function UserList() {
     resolver: zodResolver(schema),
   });
 
-  // search
+  // search and pagination
   const search = searchParams.get("name" || "");
+  const page = searchParams.get("page") || 1;
+  const size = searchParams.get("size") || 10;
 
   // handle onSubmit search
   const onSubmitSearch = ({ search }) => {
-    setSearchParams({ name: search || "", page: 1, size: 100 });
+    setSearchParams({ name: search || "", page: 1, size: 10 });
   };
 
-  // handle close modal edit
-  //   const handleCloseModal = (id) => {
-  //     document.getElementById(`modal-${id}`).checked = false;
-  //   };
+  const handleNextPage = () => {
+    setSearchParams({ name: "", page: +page + 1, size: size });
+  };
 
-  // handle delete user
-  const handleDelete = async (id) => {
-    // alert confirmation with sweetalert
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this !",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#0072f5",
-      cancelButtonColor: "#f31260",
-      confirmButtonText: "Yes, logout !",
-    }).then(async (result) => {
-      try {
+  const handlePreviousPage = () => {
+    setSearchParams({ name: "", page: +page - 1, size: size });
+  };
+
+  const navigatePage = (page) => {
+    if (!page) return;
+    setSearchParams({ name: "", page: page, size: size });
+  };
+
+  // delete user -> useMutation react query
+  const { mutate: deleteUser } = useMutation({
+    mutationFn: async (id) => {
+      // alert confirmation with sweetalert
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#0072f5",
+        cancelButtonColor: "#f31260",
+        confirmButtonText: "Yes, Inactive !",
+      }).then(async (result) => {
         if (result.isConfirmed) {
           // delete
           const response = await userService.deleteById(id);
 
           // check response
           if (response.statusCode === 200) {
+            // update cache users
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+
             // notification
             sweetAlert.success("Account inactive !");
-
-            // get all users
-            const data = await userService.getAll();
-            setUsers(data.data);
           }
         }
-      } catch (error) {
-        console.log("error");
-      }
-    });
-  };
+      });
+    },
+  });
 
-  // use effect -> get users suitable with authorization
-  useEffect(() => {
-    const getUsers = async () => {
-      try {
-        // get all users
-        const data = await userService.getAll({
-          name: search,
-        });
+  // get all user -> react query
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["users", search, page, size],
+    queryFn: async () => {
+      return await userService.getAll({
+        name: search,
+        page: page,
+        size: size,
+      });
+    },
+  });
 
-        // set users
-        setUsers(data.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getUsers();
-  }, [userService, search, searchParams, search]);
+  // loading get all user -> react query
+  if (isLoading) {
+    return <div className="">Loading...</div>;
+  }
+
+  // error get all user -> react query
+  if (error) return "An error has occurred: " + error.message;
 
   return (
     <>
+      {/* Outlet for Modal Form */}
+      <Outlet />
+
+      {/* Size */}
+      <div className="flex justify-start w-20">
+        <select
+          onChange={(e) => {
+            setSearchParams({ q: search, page, size: e.target.value });
+          }}
+          className="select"
+          value={size}
+        >
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+          <option value={100}>100</option>
+        </select>
+      </div>
+
       {/* Search Bar */}
       <div className="flex justify-end py-4">
         <form onSubmit={handleSubmit(onSubmitSearch)}>
@@ -137,28 +169,40 @@ export default function UserList() {
               <th>No</th>
               <th>Name</th>
               <th>Phone Number</th>
+              <th>Username</th>
               <th>Role</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {users.length > 0 ? (
+            {data.data.length > 0 ? (
               <>
-                {users.map((user, index) => (
+                {data.data.map((user, index) => (
                   <tr key={user.id}>
-                    <td>{index + 1}</td>
+                    {/* Index  */}
+                    {page == 1 ? (
+                      <td>{index + 1}</td>
+                    ) : (
+                      <td>{index + 1 + Number(size * (page - 1))}</td>
+                    )}
                     <td>{user.name}</td>
                     <td>{user.phoneNumber ? user.phoneNumber : "-"}</td>
+                    <td>{user.userAccount.username}</td>
                     <td>{user.userAccount.roles[0].role}</td>
                     <td>{user.status ? "Active" : "Inactive"}</td>
                     <td>
                       <div className="flex gap-3">
                         {/* Button Edit */}
-                        {/* <UserForm user={(user.id, user)} /> */}
+                        <Link
+                          to={`/dashboard/user/update/${user.id}`}
+                          className="btn btn-outline-secondary btn-sm"
+                        >
+                          Edit
+                        </Link>
                         {/* Button Inactive */}
                         <button
-                          onClick={() => handleDelete(user.id)}
+                          onClick={() => deleteUser(user.id)}
                           className="btn btn-outline-error btn-sm"
                         >
                           Inactive
@@ -179,6 +223,100 @@ export default function UserList() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination Info */}
+      <div className="flex justify-start m-5">
+        <div className="pagination">
+          <span>
+            Showing {size * (page - 1) + 1} to{" "}
+            {size * (page - 1) + data.data.length} of {data.paging.totalElement}{" "}
+            entries
+          </span>
+        </div>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-end m-5">
+        <div className="pagination">
+          {/* Previous */}
+          <button
+            disabled={!data.paging.hasPrevious}
+            onClick={() => handlePreviousPage()}
+            className="btn"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M12.2574 5.59165C11.9324 5.26665 11.4074 5.26665 11.0824 5.59165L7.25742 9.41665C6.93242 9.74165 6.93242 10.2667 7.25742 10.5917L11.0824 14.4167C11.4074 14.7417 11.9324 14.7417 12.2574 14.4167C12.5824 14.0917 12.5824 13.5667 12.2574 13.2417L9.02409 9.99998L12.2574 6.76665C12.5824 6.44165 12.5741 5.90832 12.2574 5.59165Z"
+                fill="#969696"
+              />
+            </svg>
+          </button>
+
+          {/* Pages */}
+          <button
+            className={`btn ${page == 1 ? "bg-orange" : ""}`}
+            onClick={() => navigatePage(1)}
+          >
+            1
+          </button>
+          <button disabled className={`btn ${page <= 2 ? "hidden" : ""}`}>
+            ...
+          </button>
+          <button
+            className={`btn bg-orange ${
+              page == 1 || page == data.paging.totalPages ? "hidden" : ""
+            }`}
+          >
+            {page}
+          </button>
+          <button
+            disabled
+            className={`btn ${
+              page == data.paging.totalPages - 1 || page == data.paging.totalPages ? "hidden" : ""
+            }`}
+          >
+            ...
+          </button>
+          <button
+            className={`btn ${
+              page == data.paging.totalPages ? "bg-orange" : ""
+            }`}
+            onClick={() => navigatePage(data.paging.totalPages)}
+          >
+            {data.paging.totalPages}
+          </button>
+
+          {/* Next */}
+          <button
+            disabled={!data.paging.hasNext}
+            onClick={() => handleNextPage()}
+            className="btn"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M7.74375 5.2448C7.41875 5.5698 7.41875 6.0948 7.74375 6.4198L10.9771 9.65314L7.74375 12.8865C7.41875 13.2115 7.41875 13.7365 7.74375 14.0615C8.06875 14.3865 8.59375 14.3865 8.91875 14.0615L12.7437 10.2365C13.0687 9.91147 13.0687 9.38647 12.7437 9.06147L8.91875 5.23647C8.60208 4.9198 8.06875 4.9198 7.74375 5.2448Z"
+                fill="#969696"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     </>
   );

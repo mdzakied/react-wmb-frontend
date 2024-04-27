@@ -9,15 +9,16 @@ import Table from "@pages/Table/Table";
 
 import User from "@pages/User/User";
 
-// import Admin from "@pages/User/Admin";
-// import Customer from "@pages/User/Customer";
 import Transaction from "@pages/Transaction/Transaction";
 import Account from "@pages/Account/Account";
+import UserForm from "@pages/User/components/UserForm";
+
+import Error404 from "@pages/Error/Error404";
 
 const Router = createBrowserRouter([
   {
-    path: "/",
-    element: <Navigate to="/dashboard" replace={true} />,
+    path: "*",
+    element: <Error404 />,
   },
   {
     path: "/login",
@@ -26,10 +27,6 @@ const Router = createBrowserRouter([
   {
     path: "dashboard",
     element: (
-      // <>
-      //   <Layout />
-      // </>
-
       <ProtectedRoute>
         <Layout />
       </ProtectedRoute>
@@ -52,6 +49,12 @@ const Router = createBrowserRouter([
       {
         path: "user",
         element: <User />,
+        children: [
+          {
+            path: "update/:id",
+            element: <UserForm />,
+          },
+        ],
       },
       // User Menu v2
       // {

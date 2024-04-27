@@ -1,31 +1,43 @@
 import UserService from "@services/UserService";
 import SweetAlert from "@shared/components/Modal/SweetAlert";
 
-import { useState, useMemo, useEffect, useParams } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useParams, Link, useNavigate } from "react-router-dom";
+
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 // create schema for validator with zod
 const schema = z.object({
-  name: z.any(),
-  phoneNumber: z.any(),
+  id: z.string(),
+  name: z.string().min(1, "name cannot be empty"),
+  phoneNumber: z.string().max(13, "phone number must be at most 13 digits").nullable(),
+  status: z.optional(z.boolean()),
 });
 
-export default function UserForm(id, user) {
-  // use state for data users and search params
-  const [users, setUsers] = useState([]);
+export default function UserForm() {
+  // Access the client
+  const queryClient = useQueryClient();
 
   // use service and sweet alert with useMemo -> prevent re-render
   const userService = useMemo(() => UserService(), []);
   const sweetAlert = useMemo(() => SweetAlert(), []);
 
+  // use search params for id
+  const { id } = useParams();
+
+  // use navigate hook -> redirect
+  const navigate = useNavigate();
+
   // use form hook with schema from zod resolver
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isValid },
     reset,
   } = useForm({
@@ -33,51 +45,65 @@ export default function UserForm(id, user) {
     resolver: zodResolver(schema),
   });
 
-  //    handle close modal edit
-  const handleCloseModal = (id) => {
-    document.getElementById(`modal-${id}`).checked = false;
-  };
-
-  // handle submit login
-  const onSubmit = async (data) => {
-    //console.log(id);
-
-    console.log(data);
-
-
-    try {
-      const response = await userService.update(id);
-
-      if (response && response.statusCode === 201) {
-        // close modal
-        handleCloseModal();
-
-        // notification
-        sweetAlert.success("Update successfully, user updated !");
-      }
-    } catch (error) {
+  // update user -> useMutation react query
+  const { mutate: updateUser } = useMutation({
+    mutationFn: async (payload) => {
+      // update
+      return await userService.update(payload);
+    },
+    onSuccess: () => {
+      // update cache users
+      queryClient.invalidateQueries({ queryKey: ["users"] });
       // close modal
-      handleCloseModal();
-
+      navigate("/dashboard/user");
       // notification
-      sweetAlert.error("Update admin failed !");
-    }
+      sweetAlert.success("Update successfully, user updated !");
 
-    // reset form
-    reset();
+      // reset form
+      reset();
+    },
+    onError: () => {
+      // close modal
+      navigate("/dashboard/user");
+      // notification
+      sweetAlert.error("Update user failed !");
+
+      // reset form
+      reset();
+    },
+  });
+
+  // handle submit update
+  const onSubmit = async (data) => {
+    // update user -> useMutation react query
+    updateUser(data);
   };
 
-  //const { id, user } = this.props;
-
-  console.log(id);
-  console.log(user);
+  // get user by id
+  useEffect(() => {
+    if (id) {
+      const getUserById = async () => {
+        try {
+          const response = await userService.getById(id);
+          const currentUser = response.data;
+          setValue("id", currentUser.id);
+          setValue("name", currentUser.name);
+          setValue("phoneNumber", currentUser.phoneNumber);
+          setValue("status", currentUser.status);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      getUserById();
+    }
+  }, [id, userService, setValue]);
 
   return (
     <>
       <div>
         <label
           className="btn btn-outline-secondary btn-sm "
-          htmlFor={`modal-${user.id}`}
+          htmlFor="modal-update-user"
         >
           Edit
         </label>
@@ -85,27 +111,43 @@ export default function UserForm(id, user) {
         {/* Modal Edit User */}
         <input
           className="modal-state"
-          id={`modal-${user.id}`}
+          id="modal-update-user"
           type="checkbox"
+          checked={true}
+          readOnly
         />
         <div className="modal">
-          <label className="modal-overlay" htmlFor={`modal-${user.id}`}></label>
+          <label className="modal-overlay" htmlFor="modal-update-user"></label>
           <div className="modal-content flex flex-col gap-5">
-            <label
-              htmlFor={`modal-${user.id}`}
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-            >
-              ✕
-            </label>
+            {/* Close Button Modal */}
+            <Link to={"/dashboard/user"}>
+              <label
+                htmlFor="modal-update-user"
+                className="btn btn-sm btn-circle btn-ghost absolute right-2 top-7"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                  />
+                </svg>
+              </label>
+            </Link>
 
             {/* Form */}
             <div className="bg-gray-3 p-8 shadow-lg">
               <div className="mx-auto flex w-full max-w-sm flex-col gap-6">
                 {/* Title Form */}
                 <div className="flex flex-col items-center">
-                  <h1 className="text-3xl font-semibold pb-6">
-                    Sign Up #{user.name}
-                  </h1>
+                  <h1 className="text-3xl font-semibold pb-6">Sign Up #</h1>
                   <h2 className="text-2xl font-semibold pb-2">
                     Adventure starts here 🚀
                   </h2>
@@ -158,15 +200,14 @@ export default function UserForm(id, user) {
                       )}
                     </div>
 
-                    {/* Button Sign In */}
+                    {/* Button Save */}
                     <div className="form-field pt-5">
                       <div className="form-control justify-between">
                         <button
                           type="submit"
                           className="btn btn-primary w-full"
-                          disabled={!isValid}
                         >
-                          Sign Up
+                          Save
                         </button>
                       </div>
                     </div>

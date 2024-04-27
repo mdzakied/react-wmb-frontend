@@ -13,7 +13,12 @@ const schema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-export default function AdminModalForm() {
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+export default function AdminForm() {
+  // Access the client
+  const queryClient = useQueryClient();
+
   // use service and sweet alert with useMemo -> prevent re-render
   const authService = useMemo(() => AuthService(), []);
   const sweetAlert = useMemo(() => SweetAlert(), []);
@@ -29,46 +34,75 @@ export default function AdminModalForm() {
     resolver: zodResolver(schema),
   });
 
+  // handle close modal
   const handleCloseModal = () => {
-    document.getElementById("modal-2").checked = false;
+    document.getElementById("modal-register-admin").checked = false;
+    //
+    reset();
   };
 
-  // handle submit login
-  const onSubmit = async (data) => {
-    try {
-      const response = await authService.registerCustomer(data);
-
-      if (response && response.statusCode === 201) {
-        // close modal
-        handleCloseModal();
-
-        // notification
-        sweetAlert.success("Add successfully, customer created !");
-      }
-    } catch (error) {
-      // close modal
-      handleCloseModal();
+  // add admin -> useMutation react query
+  const { mutate: addUser } = useMutation({
+    mutationFn: async (payload) => {
+      // add admin
+      return await authService.registerAdmin(payload);
+    },
+    onSuccess: () => {
+      // update cache users
+      queryClient.invalidateQueries({ queryKey: ["users"] });
 
       // notification
-      sweetAlert.error("Add customer failed !");
-    }
+      sweetAlert.success("Add admin successfully !");
+
+      // reset form
+      reset();
+    },
+    onError: (error) => {
+      // data already exists
+      if (error.response.data.message === "Data already exist") {
+        // notification
+        sweetAlert.error("Username already exists !");
+      } else {
+        // notification
+        sweetAlert.error("Add admin failed !");
+      }
+
+      // reset form
+      reset();
+    },
+  });
+
+  // handle add admin
+  const onSubmit = async (data) => {
+    // add admin -> useMutation react query
+    addUser(data);
 
     // reset form
     reset();
+
+    // close modal
+    handleCloseModal();
   };
 
   return (
     <>
-      <label className="btn btn-outline-primary" htmlFor="modal-2">
-        Add Customer
+      {/* Button Modal */}
+      <label className="btn btn-outline-primary" htmlFor="modal-register-admin">
+        Add Admin
       </label>
-      <input className="modal-state" id="modal-2" type="checkbox" />
+      <input
+        className="modal-state"
+        id="modal-register-admin"
+        type="checkbox"
+      />
+
+      {/* Modal */}
       <div className="modal">
-        <label className="modal-overlay" htmlFor="modal-2"></label>
+        <label className="modal-overlay" htmlFor="modal-register-admin"></label>
         <div className="modal-content flex flex-col gap-5">
           {/* Close Button Modal */}
           <label
-            htmlFor="modal-2"
+            htmlFor="modal-register-admin"
             className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
           >
             <svg
@@ -97,7 +131,7 @@ export default function AdminModalForm() {
                   Adventure starts here 🚀
                 </h2>
                 <p className="text-sm pb-5">
-                  Make your <span className="text-primary">customer </span>
+                  Make your <span className="text-primary">admin </span>
                   account for your app management !
                 </p>
               </div>

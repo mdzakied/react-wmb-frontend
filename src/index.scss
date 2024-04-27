@@ -22,6 +22,7 @@ input[type="number"] {
 // styles
 $dark: #1f1d2b !important;
 $orange: #ea7c69 !important;
+$red: #ff7ca3 !important;
 
 html {
   background-color: #252836 !important;
@@ -31,15 +32,31 @@ html {
   background-color: $dark;
 }
 
-// tailwind
-.menu-active {
+.bg-orange {
   background-color: $orange;
+}
+
+.text-orange {
+  color: $orange;
+}
+
+.text-red {
+  color: $red;
 }
 
 .divider-title {
   margin-top: 0.3rem;
   border-bottom: 2px solid white;
   border-radius: 50px 50px;
+}
+
+// tailwind
+.menu-active {
+  background-color: $orange;
+}
+
+.input {
+  max-width: 100rem !important;
 }
 
 // sweetalert2

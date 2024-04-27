@@ -7,7 +7,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 
 export default function Sidebar() {
-  
   // use sweet alert with useMemo -> prevent re-render
   const sweetAlert = useMemo(() => SweetAlert(), []);
   // use navigate hook -> redirect
@@ -24,8 +23,8 @@ export default function Sidebar() {
       text: "You won't be able to revert this !",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#0072f5",
-      cancelButtonColor: "#f31260",
+      confirmButtonColor: "#ea7c69 ",
+      cancelButtonColor: "#ff7ca3",
       confirmButtonText: "Yes, logout !",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -288,8 +287,8 @@ export default function Sidebar() {
             <div className="divider my-0"></div>
             <div className="">
               <label className="whites mx-2 flex h-fit" tabIndex="0">
-                <div className="flex flex-row gap-4 p-4">
-                  <div className="avatar-square avatar avatar-sm">
+                <div className="flex flex-row gap-4 p-4 ">
+                  <div className="avatar-square avatar avatar-sm my-auto">
                     <img
                       src="https://cdn-icons-png.freepik.com/256/3135/3135715.png?ga=GA1.1.1505588938.1704985907&semt=ais_hybrid"
                       alt="avatar"
@@ -297,7 +296,8 @@ export default function Sidebar() {
                   </div>
 
                   <div className="flex flex-col">
-                    <span>{currentUser ? currentUser.username : ""}</span>
+                    <span>{currentUser?.username}</span>
+                    <span className="text-xs mt-1">{currentUser?.roles[0]}</span>
                   </div>
                 </div>
               </label>

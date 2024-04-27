@@ -1,5 +1,5 @@
-import AdminModalForm from "./components/AdminModalForm";
-import CustomerModalForm from "./components/CustomerModalForm";
+import AdminModalForm from "./components/AdminForm";
+import CustomerModalForm from "./components/CustomerForm";
 
 import UserList from "./components/UserList";
 
