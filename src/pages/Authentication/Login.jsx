@@ -1,7 +1,3 @@
-import AuthService from "@services/AuthService";
-import SweetAlert from "@shared/components/Modal/SweetAlert";
-import NotificationToastify from "@shared/components/Notification/NotificationToastify";
-
 import { useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -9,7 +5,8 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import LoginImg from "@assets/images/login.png";
+import AuthService from "@services/AuthService";
+import SweetAlert from "@shared/components/Modal/SweetAlert";
 
 // create schema for validator with zod
 const schema = z.object({
@@ -99,14 +96,10 @@ export default function Login() {
                 Welcome to WMB ! 👋🏻
               </h2>
               <p className="text-sm pb-5">
-                Please <span className="text-orange">sign-in</span>  to your account and start the adventure
+                Please <span className="text-orange">sign-in</span> to your
+                account and start the adventure
               </p>
             </div>
-
-            {/* Image */}
-            {/* <div className="flex justify-center w-100">
-              <img src={LoginImg} alt="LoginImg" />
-            </div> */}
 
             {/* Login Form */}
             <form onSubmit={handleSubmit(onSubmit)}>

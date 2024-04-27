@@ -1,5 +1,6 @@
-import Sidebar from "@shared/components/Sidebar/Sidebar";
 import { Outlet } from "react-router-dom";
+
+import Sidebar from "@shared/components/Sidebar/Sidebar";
 
 export default function Layout() {
   // get current user from local storage
@@ -64,8 +65,8 @@ export default function Layout() {
                       </svg>
                       <span className="my-auto">{currentUser?.username}</span>
                     </a>
-                    {/* Role */}
 
+                    {/* Role */}
                     <a className="dropdown-item text-sm flex flex-row">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

@@ -1,10 +1,10 @@
-import SweetAlert from "@shared/components/Modal/SweetAlert";
-
 import { useMemo } from "react";
-
 import { NavLink, useNavigate } from "react-router-dom";
 
 import Swal from "sweetalert2/dist/sweetalert2.js";
+
+import SweetAlert from "@shared/components/Modal/SweetAlert";
+
 
 export default function Sidebar() {
   // use sweet alert with useMemo -> prevent re-render
