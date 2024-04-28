@@ -27,10 +27,9 @@ export default function TransactionDetailModal() {
     return <div className="">Loading...</div>;
   }
 
-  console.log(data.data.transactionDetails);
-
   return (
     <>
+      {/* Modal */}
       <div>
         <input
           type="checkbox"
@@ -123,9 +122,8 @@ export default function TransactionDetailModal() {
               </div>
             </div>
 
-            {/* Form */}
+            {/* Close Button Modal */}
             <div className="h-full flex flex-row justify-end items-end gap-2">
-              {/* Close Button Modal */}
               <Link to={"/dashboard/transaction"}>
                 <button className="btn btn-sm bg-orange">Close</button>
               </Link>

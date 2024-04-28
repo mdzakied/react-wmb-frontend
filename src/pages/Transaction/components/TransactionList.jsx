@@ -171,7 +171,7 @@ export default function TransactionList() {
                         {/* Button Payment */}
                         <a
                           href={`${transaction.payment.redirectUrl}`}
-                          className="btn btn-outline-secondary btn-sm"
+                          className="btn btn-outline-success btn-sm"
                           target="_blank"
                         >
                           Payment
