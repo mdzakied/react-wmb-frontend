@@ -63,7 +63,7 @@ export default function TransactionList() {
 
   // loading get all transaction -> react query
   if (isLoading) {
-    return <div className="">Loading...</div>;
+    return <div className="loader"></div>;
   }
 
   return (

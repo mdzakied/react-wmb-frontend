@@ -13,6 +13,8 @@ function ProtectedRoute({ children }) {
   // use navigate hook -> redirect
   const navigate = useNavigate();
 
+  
+
   // useEffect -> check token always when service or route change
   useEffect(() => {
     // check token

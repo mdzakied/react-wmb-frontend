@@ -99,7 +99,7 @@ export default function UserList() {
 
   // loading get all user -> react query
   if (isLoading) {
-    return <div className="">Loading...</div>;
+    return <div className="loader"></div>;
   }
 
   return (
