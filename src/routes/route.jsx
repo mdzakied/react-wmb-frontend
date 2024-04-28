@@ -15,8 +15,8 @@ import Transaction from "@pages/Transaction/Transaction";
 import TransactionDetailModal from "@pages/Transaction/components/TransactionDetailModal";
 import Account from "@pages/Account/Account";
 
-import Error404 from "@pages/Error/Error404";
-
+import ErrorBoundary from "@shared/components/Error/ErrorBoundary";
+import Error404 from "@shared/components/Error/Error404";
 
 const Router = createBrowserRouter([
   {
@@ -30,9 +30,11 @@ const Router = createBrowserRouter([
   {
     path: "dashboard",
     element: (
-      <ProtectedRoute>
-        <Layout />
-      </ProtectedRoute>
+      <ErrorBoundary>
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      </ErrorBoundary>
     ),
     children: [
       {

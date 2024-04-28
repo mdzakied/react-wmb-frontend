@@ -14,6 +14,13 @@ function Error404() {
         <div className="flex justify-center ">
           <img src={errorImage404} alt="errorImg" className="w-3/4 md:w-1/3" />
         </div>
+        {/* Text */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold mb-4">Page Not Found</h1>
+          <p className="text-md">
+            The page you are looking for could not be found.
+          </p>
+        </div>
         {/* Back to Home Button */}
         <div className="flex justify-center">
           {/* Link to Home Page */}
