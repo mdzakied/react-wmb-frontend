@@ -4,12 +4,14 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import TransactionService from "@services/TransactionService";
+import NumberFormatter from "@shared/utils/NumberFormatter";
 
 import foodDefaultImg from "@assets/images/food-default.png";
 
 export default function TransactionDetailModal() {
-  // use service with useMemo -> prevent re-render
+  // use service and utils with useMemo -> prevent re-render
   const transactionService = useMemo(() => TransactionService(), []);
+  const numberFormatter = useMemo(() => NumberFormatter(), []);
 
   // use search params for id
   const { id } = useParams();
@@ -80,14 +82,14 @@ export default function TransactionDetailModal() {
                   <div className="my-auto w-full px-1">
                     <div className="text-md">{transDetail.menu.name}</div>
                     <div className="text-sm mt-1 mb-2">
-                      {transDetail.menu.price}{" "}
+                      {numberFormatter.formatRupiah(transDetail.menu.price)}{" "}
                       <span className="text-sm my-auto ml-1">
                         x {transDetail.qty}
                       </span>
                     </div>
                     <div className="divider-title"></div>
                     <div className="text-sm text-orange font-semibold mt-2">
-                      {transDetail.price}
+                      {numberFormatter.formatRupiah(transDetail.price)}
                     </div>
                   </div>
                 </div>
@@ -115,9 +117,11 @@ export default function TransactionDetailModal() {
                   <span className="my-auto">Sub Total :</span>
                 </div>
                 <div className="text-orange font-semibold">
-                  {data.data.transactionDetails.reduce((a, b) => {
-                    return a.price + b.price;
-                  })}
+                  {numberFormatter.formatRupiah(
+                    data.data.transactionDetails.reduce((a, b) => {
+                      return a.price + b.price;
+                    })
+                  )}
                 </div>
               </div>
             </div>
