@@ -10,10 +10,13 @@ import Table from "@pages/Table/Table";
 import User from "@pages/User/User";
 import UserForm from "@pages/User/components/UserForm";
 
+import Order from "@pages/Order/Order";
 import Transaction from "@pages/Transaction/Transaction";
+import TransactionDetailModal from "@pages/Transaction/components/TransactionDetailModal";
 import Account from "@pages/Account/Account";
 
 import Error404 from "@pages/Error/Error404";
+
 
 const Router = createBrowserRouter([
   {
@@ -44,8 +47,6 @@ const Router = createBrowserRouter([
         path: "table",
         element: <Table />,
       },
-
-      // User Menu v1
       {
         path: "user",
         element: <User />,
@@ -56,23 +57,19 @@ const Router = createBrowserRouter([
           },
         ],
       },
-      // User Menu v2
-      // {
-      //   path: "user",
-      //   children: [
-      //     {
-      //       path: "admin",
-      //       element: <Admin />,
-      //     },
-      //     {
-      //       path: "customer",
-      //       element: <Customer />,
-      //     },
-      //   ],
-      // },
+      {
+        path: "order",
+        element: <Order />,
+      },
       {
         path: "transaction",
         element: <Transaction />,
+        children: [
+          {
+            path: "detail/:id",
+            element: <TransactionDetailModal />,
+          },
+        ],
       },
       {
         path: "account",

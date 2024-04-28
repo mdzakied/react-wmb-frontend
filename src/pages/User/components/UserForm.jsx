@@ -100,14 +100,7 @@ export default function UserForm() {
 
   return (
     <>
-      <div>
-        <label
-          className="btn btn-outline-secondary btn-sm "
-          htmlFor="modal-update-user"
-        >
-          Edit
-        </label>
-
+      <div className="w-screen">
         {/* Modal Edit User */}
         <input
           className="modal-state"

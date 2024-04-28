@@ -5,27 +5,21 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import Swal from "sweetalert2/dist/sweetalert2.js";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
-import UserService from "@services/UserService";
-import SweetAlert from "@shared/components/Modal/SweetAlert";
+import TransactionService from "@services/TransactionService";
 
 // create schema for validator with zod
 const schema = z.object({
   search: z.optional(z.string()),
 });
 
-export default function UserList() {
-  // Access the client
-  const queryClient = useQueryClient();
-
-  // use state for data users and search params
+export default function TransactionList() {
+  // use state for data transactions and search params
   const [searchParams, setSearchParams] = useSearchParams();
 
   // use service and sweet alert with useMemo -> prevent re-render
-  const userService = useMemo(() => UserService(), []);
-  const sweetAlert = useMemo(() => SweetAlert(), []);
+  const transactionService = useMemo(() => TransactionService(), []);
 
   // use form hook with schema from zod resolver
   const { register, handleSubmit } = useForm({
@@ -34,70 +28,40 @@ export default function UserList() {
   });
 
   // search and pagination
-  const search = searchParams.get("name" || "");
+  const search = searchParams.get("userName" || "");
   const page = searchParams.get("page") || 1;
   const size = searchParams.get("size") || 10;
 
   // handle search and pagination
   const onSubmitSearch = ({ search }) => {
-    setSearchParams({ name: search || "", page: 1, size: 10 });
+    setSearchParams({ userName: search || "", page: 1, size: 10 });
   };
 
   const handleNextPage = (search) => {
-    setSearchParams({ name: search || "", page: +page + 1, size: size });
+    setSearchParams({ userName: search || "", page: +page + 1, size: size });
   };
 
   const handlePreviousPage = (search) => {
-    setSearchParams({ name: search || "", page: +page - 1, size: size });
+    setSearchParams({ userName: search || "", page: +page - 1, size: size });
   };
 
   const navigatePage = (search, page) => {
-    setSearchParams({ name: search || "", page: page, size: size });
+    setSearchParams({ userName: search || "", page: page, size: size });
   };
 
-  // delete user -> useMutation react query
-  const { mutate: deleteUser } = useMutation({
-    mutationFn: async (id) => {
-      // alert confirmation with sweetalert
-      Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this !",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#0072f5",
-        cancelButtonColor: "#f31260",
-        confirmButtonText: "Yes, Inactive !",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          // delete
-          const response = await userService.deleteById(id);
-
-          // check response
-          if (response.statusCode === 200) {
-            // update cache users
-            queryClient.invalidateQueries({ queryKey: ["users"] });
-
-            // notification
-            sweetAlert.success("Account inactive !");
-          }
-        }
-      });
-    },
-  });
-
-  // get all user -> react query
+  // get all transaction -> react query
   const { data, isLoading } = useQuery({
-    queryKey: ["users", search, page, size],
+    queryKey: ["transactions", search, page, size],
     queryFn: async () => {
-      return await userService.getAll({
-        name: search,
+      return await transactionService.getAll({
+        userName: search,
         page: page,
         size: size,
       });
     },
   });
 
-  // loading get all user -> react query
+  // loading get all transaction -> react query
   if (isLoading) {
     return <div className="">Loading...</div>;
   }
@@ -114,7 +78,7 @@ export default function UserList() {
           <select
             onChange={(e) => {
               setSearchParams({
-                name: search || "",
+                userName: search || "",
                 page,
                 size: e.target.value,
               });
@@ -166,46 +130,52 @@ export default function UserList() {
           <thead>
             <tr>
               <th>No</th>
+              <th>Date</th>
               <th>Name</th>
-              <th>Phone Number</th>
               <th>Username</th>
               <th>Role</th>
-              <th>Status</th>
+              <th>Table</th>
+              <th>Trans Type</th>
+              <th>Trans Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {data.data.length > 0 ? (
               <>
-                {data.data.map((user, index) => (
-                  <tr key={user.id}>
+                {data.data.map((transaction, index) => (
+                  <tr key={transaction.id}>
                     {/* Index  */}
                     {page == 1 ? (
                       <td>{index + 1}</td>
                     ) : (
                       <td>{index + 1 + Number(size * (page - 1))}</td>
                     )}
-                    <td>{user.name}</td>
-                    <td>{user.phoneNumber ? user.phoneNumber : "-"}</td>
-                    <td>{user.userAccount.username}</td>
-                    <td>{user.userAccount.roles[0].role}</td>
-                    <td>{user.status ? "Active" : "Inactive"}</td>
+                    <td>{transaction.transDate}</td>
+                    <td>{transaction.user.name}</td>
+                    <td>{transaction.user.userAccount.username}</td>
+                    <td>{transaction.user.userAccount.roles[0].role}</td>
+                    <td>{transaction.table ? transaction.table.name : "-"}</td>
+                    <td>{transaction.transType.desc}</td>
+                    <td>{transaction.payment.transactionStatus}</td>
                     <td>
                       <div className="flex gap-3">
-                        {/* Button Edit */}
+                        {/* Button Detail */}
                         <Link
-                          to={`/dashboard/user/update/${user.id}`}
+                          to={`/dashboard/transaction/detail/${transaction.id}`}
                           className="btn btn-outline-secondary btn-sm"
                         >
-                          Edit
+                          Detail
                         </Link>
-                        {/* Button Inactive */}
-                        <button
-                          onClick={() => deleteUser(user.id)}
-                          className="btn btn-outline-error btn-sm"
+
+                        {/* Button Payment */}
+                        <a
+                          href={`${transaction.payment.redirectUrl}`}
+                          className="btn btn-outline-secondary btn-sm"
+                          target="_blank"
                         >
-                          Inactive
-                        </button>
+                          Payment
+                        </a>
                       </div>
                     </td>
                   </tr>
