@@ -10,10 +10,12 @@ function ProtectedRoute({ children }) {
   // use service and sweet alert with useMemo -> prevent re-render
   const authService = AuthService();
   const sweetAlert = useMemo(() => SweetAlert(), []);
+
   // use navigate hook -> redirect
   const navigate = useNavigate();
 
-  
+  // current user
+  const currentUser = JSON.parse(localStorage.getItem("user"));
 
   // useEffect -> check token always when service or route change
   useEffect(() => {
@@ -31,7 +33,7 @@ function ProtectedRoute({ children }) {
     };
 
     checkToken();
-  }, [authService, sweetAlert, navigate]);
+  }, [authService, currentUser, sweetAlert, navigate]);
 
   return <>{children}</>;
 }

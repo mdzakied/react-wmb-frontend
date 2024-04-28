@@ -39,14 +39,20 @@ export default function Login() {
       const response = await authService.login(data);
 
       if (response && response.statusCode === 200) {
-        // save user to local storage -> json stringify
-        localStorage.setItem("user", JSON.stringify(response.data));
+        // check role
+        if (response.data.roles[0] === "ROLE_CUSTOMER") {
+          // notification
+          sweetAlert.info("Sorry, feature for customer currently maintained !");
+        } else {
+          // save user to local storage -> json stringify
+          localStorage.setItem("user", JSON.stringify(response.data));
 
-        // redirect
-        navigate("/dashboard");
+          // redirect
+          navigate("/dashboard");
 
-        // notification
-        sweetAlert.success("Login successfully, welcome back !");
+          // notification
+          sweetAlert.success("Login successfully, welcome back !");
+        }
       }
     } catch (error) {
       if (error.response.status == 500) {
