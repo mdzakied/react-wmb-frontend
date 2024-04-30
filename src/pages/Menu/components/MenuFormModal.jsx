@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
@@ -7,27 +7,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import UserService from "@services/UserService";
+import MenuService from "@services/MenuService";
 import SweetAlert from "@shared/components/Modal/SweetAlert";
 
 // create schema for validator with zod
 const schema = z.object({
-  id: z.string(),
+  id: z.optional(z.string()),
   name: z.string().min(1, "name cannot be empty"),
-  phoneNumber: z.optional(
-    z.string()
-    .max(13, "phone number must be at most 13 digits")
-    .nullable(),
-  ),
-  status: z.optional(z.boolean()),
+  price: z.string().min(1, "price must be at least 1 digit"),
+  image: z
+    .any()
+    .optional()
+    .refine((files) => {
+      if (files?.length === 0) return true;
+      return ["image/png", "image/jpg", "image/jpeg"].includes(files[0].type);
+    }, "format gambar tidak sesuai"),
 });
 
-export default function UserForm() {
+export default function MenuFormModal() {
   // Access the client
   const queryClient = useQueryClient();
 
   // use service and sweet alert with useMemo -> prevent re-render
-  const userService = useMemo(() => UserService(), []);
+  const menuService = useMemo(() => MenuService(), []);
   const sweetAlert = useMemo(() => SweetAlert(), []);
 
   // use search params for id
@@ -48,28 +50,41 @@ export default function UserForm() {
     resolver: zodResolver(schema),
   });
 
-  // update user -> useMutation react query
-  const { mutate: updateUser } = useMutation({
+  // update menu -> useMutation react query
+  const { mutate: serviceMenu } = useMutation({
     mutationFn: async (payload) => {
-      // update
-      return await userService.update(payload);
+      // conditional create or update
+      if (id) {
+        // update
+        return await menuService.update(payload);
+      } else {
+        // create
+        return await menuService.create(payload);
+      }
     },
     onSuccess: () => {
-      // update cache users
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      // update cache menus
+      queryClient.invalidateQueries({ queryKey: ["menus"] });
+
       // close modal
-      navigate("/dashboard/user");
+      navigate("/dashboard/menu");
+
       // notification
-      sweetAlert.success("Update successfully, user updated !");
+      sweetAlert.success(
+        `${id ? "Edit" : "Add"} successfully, menu ${
+          id ? "updated" : "created"
+        } !`
+      );
 
       // reset form
       reset();
     },
     onError: () => {
       // close modal
-      navigate("/dashboard/user");
+      navigate("/dashboard/menu");
+
       // notification
-      sweetAlert.error("Update user failed !");
+      sweetAlert.error(`${id ? "Edit" : "Add"} menu failed !`);
 
       // reset form
       reset();
@@ -78,47 +93,71 @@ export default function UserForm() {
 
   // handle submit update
   const onSubmit = async (data) => {
-    // update user -> useMutation react query
-    updateUser(data);
+    // set form and data edited
+    const form = new FormData();
+    let menu = {};
+
+    // conditional create or update
+    if (data.id) {
+      menu = {
+        id: data.id,
+        name: data.name,
+        price: data.price,
+      };
+    } else {
+      menu = {
+        name: data.name,
+        price: data.price,
+      };
+    }
+
+    form.append("menu", JSON.stringify(menu));
+
+    if (data.image) {
+      form.append("image", data.image[0]);
+    }
+
+    // update menu -> useMutation react query
+    await serviceMenu(form);
   };
 
-  // get user by id
+  // get menu by id
   useEffect(() => {
+    // update form
     if (id) {
-      const getUserById = async () => {
+      const getMenuById = async () => {
         try {
           // set data to form
-          const response = await userService.getById(id);
-          const currentUser = response.data;
-          setValue("id", currentUser.id);
-          setValue("name", currentUser.name);
-          setValue("phoneNumber", currentUser.phoneNumber);
-          setValue("status", currentUser.status);
+          const response = await menuService.getById(id);
+          const currentMenu = response.data;
+          setValue("id", currentMenu.id);
+          setValue("name", currentMenu.name);
+          setValue("price", currentMenu.price);
         } catch (error) {
           console.log(error);
         }
       };
-      getUserById();
+      getMenuById();
     }
-  }, [id, userService, setValue]);
+  }, [id, menuService, setValue]);
 
   return (
     <>
-      {/* Modal Edit User */}
+      {/* Modal Edit Menu */}
       <input
         className="modal-state"
-        id="modal-update-user"
+        id="modal-update-menu"
         type="checkbox"
         checked={true}
         readOnly
       />
       <div className="modal">
-        <label className="modal-overlay" htmlFor="modal-update-user"></label>
+        <label className="modal-overlay" htmlFor="modal-update-menu"></label>
         <div className="modal-content rounded-2xl flex flex-col gap-5">
           {/* Close Button Modal */}
-          <Link to={"/dashboard/user"}>
+          <Link to={"/dashboard/menu"}>
             <label
-              htmlFor="modal-update-user"
+              htmlFor="modal-update-menu"
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-7"
             >
               <svg
@@ -143,15 +182,20 @@ export default function UserForm() {
             <div className="mx-auto flex w-full max-w-sm flex-col gap-6">
               {/* Title Form */}
               <div className="flex flex-col text-center items-center">
-                <h1 className="text-3xl font-semibold pb-6">Edit User</h1>
-                <h2 className="text-2xl font-semibold pb-2">Update here 📝</h2>
+                <h1 className="text-3xl font-semibold pb-6">
+                  {id ? "Edit" : "Add"} Menu
+                </h1>
+                <h2 className="text-2xl font-semibold pb-2">
+                  {id ? "Update" : "Create"} here 📝
+                </h2>
                 <p className="text-sm pb-5">
-                  Update your <span className="text-orange">user </span>
-                  account for your app management !
+                  {id ? "Update" : "Create"} your{" "}
+                  <span className="text-orange">menu </span>
+                  dish for your app management !
                 </p>
               </div>
 
-              {/* Login Form */}
+              {/* Menu Form */}
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="form-group">
                   <div className="form-field">
@@ -174,21 +218,41 @@ export default function UserForm() {
                     )}
                   </div>
 
-                  {/* Phone Number Field */}
+                  {/* Price Field */}
                   <div className="form-field">
-                    <label className="form-label mb-1">Phone Number</label>
+                    <label className="form-label mb-1">Price</label>
                     <input
-                      {...register("phoneNumber")}
-                      placeholder="08xxxxxxxxx"
+                      {...register("price")}
+                      placeholder="30xxxx"
                       type="number"
                       className={`input bg-grey max-w-full ${
-                        errors.phoneNumber && "input-error"
+                        errors.price && "input-error"
                       }`}
                     />
-                    {errors.phoneNumber && (
+                    {errors.price && (
                       <label className="form-label">
                         <span className="form-label-alt text-red">
-                          {errors.phoneNumber.message}
+                          {errors.price.message}
+                        </span>
+                      </label>
+                    )}
+                  </div>
+
+                  {/* Image Field */}
+                  <div className="form-field">
+                    <label className="form-label mb-1">Image</label>
+                    <input
+                      {...register("image")}
+                      size="20"
+                      type="file"
+                      className={`input bg-grey max-w-full py-1.5 text-xs ${
+                        errors.image && "input-error"
+                      }`}
+                    />
+                    {errors.image && (
+                      <label className="form-label">
+                        <span className="form-label-alt text-red">
+                          {errors.image.message}
                         </span>
                       </label>
                     )}
@@ -198,8 +262,8 @@ export default function UserForm() {
                   <div className="form-field pt-5">
                     <div className="form-control justify-between">
                       <button
-                        disabled={!isValid}
                         type="submit"
+                        disabled={!isValid}
                         className="btn bg-orange w-full"
                       >
                         Save

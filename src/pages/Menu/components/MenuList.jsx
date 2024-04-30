@@ -8,24 +8,27 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import UserService from "@services/UserService";
+import MenuService from "@services/MenuService";
+import foodDefaultImg from "@assets/images/food-default.png";
 import SweetAlert from "@shared/components/Modal/SweetAlert";
+import NumberFormatter from "@shared/utils/NumberFormatter";
 
 // create schema for validator with zod
 const schema = z.object({
   search: z.optional(z.string()),
 });
 
-export default function UserList() {
+export default function MenuList() {
   // Access the client
   const queryClient = useQueryClient();
 
-  // use state for data users and search params
+  // use state for data menus and search params
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // use service and sweet alert with useMemo -> prevent re-render
-  const userService = useMemo(() => UserService(), []);
+  // use service and utils with useMemo -> prevent re-render
+  const menuService = useMemo(() => MenuService(), []);
   const sweetAlert = useMemo(() => SweetAlert(), []);
+  const numberFormatter = useMemo(() => NumberFormatter(), []);
 
   // use form hook with schema from zod resolver
   const { register, handleSubmit } = useForm({
@@ -55,8 +58,8 @@ export default function UserList() {
     setSearchParams({ name: search || "", page: page, size: size });
   };
 
-  // delete user -> useMutation react query
-  const { mutate: deleteUser } = useMutation({
+  // delete menu -> useMutation react query
+  const { mutate: deleteMenu } = useMutation({
     mutationFn: async (id) => {
       // alert confirmation with sweetalert
       Swal.fire({
@@ -66,30 +69,30 @@ export default function UserList() {
         showCancelButton: true,
         confirmButtonColor: "#0072f5",
         cancelButtonColor: "#f31260",
-        confirmButtonText: "Yes, Inactive !",
+        confirmButtonText: "Yes, Deleted !",
       }).then(async (result) => {
         if (result.isConfirmed) {
           // delete
-          const response = await userService.deleteById(id);
+          const response = await menuService.deleteById(id);
 
           // check response
           if (response.statusCode === 200) {
-            // update cache users
-            queryClient.invalidateQueries({ queryKey: ["users"] });
+            // update cache menus
+            queryClient.invalidateQueries({ queryKey: ["menus"] });
 
             // notification
-            sweetAlert.success("Account inactive !");
+            sweetAlert.success("Menu deleted !");
           }
         }
       });
     },
   });
 
-  // get all user -> react query
+  // get all menu -> react query
   const { data, isLoading } = useQuery({
-    queryKey: ["users", search, page, size],
+    queryKey: ["menus", search, page, size],
     queryFn: async () => {
-      return await userService.getAll({
+      return await menuService.getAll({
         name: search,
         page: page,
         size: size,
@@ -97,7 +100,7 @@ export default function UserList() {
     },
   });
 
-  // loading get all user -> react query
+  // loading get all menu -> react query
   if (isLoading) {
     return <div className="loader"></div>;
   }
@@ -163,45 +166,50 @@ export default function UserList() {
           <thead>
             <tr>
               <th>No</th>
+              <th>Image</th>
               <th>Name</th>
-              <th>Phone Number</th>
-              <th>Username</th>
-              <th>Role</th>
-              <th>Status</th>
+              <th>Price</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {data.data.length > 0 ? (
               <>
-                {data.data.map((user, index) => (
-                  <tr key={user.id}>
+                {data.data.map((menu, index) => (
+                  <tr key={menu.id}>
                     {/* Index  */}
                     {page == 1 ? (
                       <td>{index + 1}</td>
                     ) : (
                       <td>{index + 1 + Number(size * (page - 1))}</td>
                     )}
-                    <td>{user.name}</td>
-                    <td>{user.phoneNumber ? user.phoneNumber : "-"}</td>
-                    <td>{user.userAccount.username}</td>
-                    <td>{user.userAccount.roles[0].role}</td>
-                    <td>{user.status ? "Active" : "Inactive"}</td>
+                    <td>
+                      <div className="my-auto">
+                        <img
+                          src={menu.image ? `/${menu.image.url}` : foodDefaultImg}
+                          alt="menu image"
+                          width={80}
+                          height={80}
+                        />
+                      </div>
+                    </td>
+                    <td>{menu.name}</td>
+                    <td>{numberFormatter.formatRupiah(menu.price)}</td>
                     <td>
                       <div className="flex gap-3">
                         {/* Button Edit */}
                         <Link
-                          to={`/dashboard/user/update/${user.id}`}
+                          to={`/dashboard/menu/update/${menu.id}`}
                           className="btn btn-outline-secondary btn-sm"
                         >
                           Edit
                         </Link>
-                        {/* Button Inactive */}
+                        {/* Button Delete */}
                         <button
-                          onClick={() => deleteUser(user.id)}
+                          onClick={() => deleteMenu(menu.id)}
                           className="btn btn-outline-error btn-sm"
                         >
-                          Inactive
+                          Delete
                         </button>
                       </div>
                     </td>

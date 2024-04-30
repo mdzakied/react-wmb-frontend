@@ -180,7 +180,7 @@ export default function AdminForm() {
                     )}
                   </div>
 
-                  {/* Button Sign In */}
+                  {/* Button Sign Up */}
                   <div className="form-field pt-5">
                     <div className="form-control justify-between">
                       <button

@@ -1,3 +1,4 @@
+import { Outlet } from "react-router-dom";
 import AdminModalForm from "./components/AdminForm";
 import CustomerModalForm from "./components/CustomerForm";
 
@@ -9,6 +10,9 @@ export default function User() {
 
   return (
     <>
+      {/* Outlet for Modal Form */}
+      <Outlet />
+
       {/* Tittle */}
       <div>
         <h1 className="text-2xl font-semibold mb-2">User</h1>

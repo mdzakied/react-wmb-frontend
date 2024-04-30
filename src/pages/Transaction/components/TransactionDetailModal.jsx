@@ -82,7 +82,9 @@ export default function TransactionDetailModal() {
                   <div className="my-auto w-full px-1">
                     <div className="text-md">{transDetail.menu.name}</div>
                     <div className="text-sm mt-1 mb-2">
-                      {numberFormatter.formatRupiah(transDetail.menu.price)}{" "}
+                      {numberFormatter.formatRupiah(
+                        transDetail.price / transDetail.qty
+                      )}{" "}
                       <span className="text-sm my-auto ml-1">
                         x {transDetail.qty}
                       </span>

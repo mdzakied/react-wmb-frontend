@@ -1,10 +1,13 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 
 import Login from "@pages/Authentication/Login";
 import Layout from "@layouts/Layout";
 import Dashboard from "@pages/Dashboard/Dashboard";
+
 import Menu from "@pages/Menu/Menu";
+import MenuFormModal from "@pages/Menu/components/MenuFormModal";
+
 import Table from "@pages/Table/Table";
 
 import User from "@pages/User/User";
@@ -18,10 +21,15 @@ import Account from "@pages/Account/Account";
 import ErrorBoundary from "@shared/components/Error/ErrorBoundary";
 import Error404 from "@shared/components/Error/Error404";
 
+
 const Router = createBrowserRouter([
   {
     path: "*",
     element: <Error404 />,
+  },
+  {
+    path: "/",
+    element: <Navigate to="/dashboard" replace={true} />,
   },
   {
     path: "/login",
@@ -44,6 +52,16 @@ const Router = createBrowserRouter([
       {
         path: "menu",
         element: <Menu />,
+        children: [
+          {
+            path: "add",
+            element: <MenuFormModal />,
+          },
+          {
+            path: "update/:id",
+            element: <MenuFormModal />,
+          },
+        ],
       },
       {
         path: "table",
