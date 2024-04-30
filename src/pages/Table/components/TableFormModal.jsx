@@ -7,29 +7,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import MenuService from "@services/MenuService";
+import TableService from "@services/TableService";
 import SweetAlert from "@shared/components/Modal/SweetAlert";
 
 // create schema for validator with zod
 const schema = z.object({
   id: z.optional(z.string()),
   name: z.string().min(1, "name cannot be empty"),
-  price: z.string().min(1, "price must be at least 1 digit"),
-  image: z
-    .any()
-    .optional()
-    .refine((files) => {
-      if (files?.length === 0) return true;
-      return ["image/png", "image/jpg", "image/jpeg"].includes(files[0].type);
-    }, "format gambar tidak sesuai"),
 });
 
-export default function MenuFormModal() {
+export default function TableFormModal() {
   // Access the client
   const queryClient = useQueryClient();
 
   // use service and sweet alert with useMemo -> prevent re-render
-  const menuService = useMemo(() => MenuService(), []);
+  const tableService = useMemo(() => TableService(), []);
   const sweetAlert = useMemo(() => SweetAlert(), []);
 
   // use search params for id
@@ -50,28 +42,28 @@ export default function MenuFormModal() {
     resolver: zodResolver(schema),
   });
 
-  // update menu -> useMutation react query
-  const { mutate: serviceMenu } = useMutation({
+  // update table -> useMutation react query
+  const { mutate: serviceTable } = useMutation({
     mutationFn: async (payload) => {
       // conditional create or update
       if (id) {
         // update
-        return await menuService.update(payload);
+        return await tableService.update(payload);
       } else {
         // create
-        return await menuService.create(payload);
+        return await tableService.create(payload);
       }
     },
     onSuccess: () => {
-      // update cache menus
-      queryClient.invalidateQueries({ queryKey: ["menus"] });
+      // update cache tables
+      queryClient.invalidateQueries({ queryKey: ["tables"] });
 
       // close modal
-      navigate("/dashboard/menu");
+      navigate("/dashboard/table");
 
       // notification
       sweetAlert.success(
-        `${id ? "Edit" : "Add"} successfully, menu ${
+        `${id ? "Edit" : "Add"} successfully, table ${
           id ? "updated" : "created"
         } !`
       );
@@ -81,10 +73,10 @@ export default function MenuFormModal() {
     },
     onError: () => {
       // close modal
-      navigate("/dashboard/menu");
+      navigate("/dashboard/table");
 
       // notification
-      sweetAlert.error(`${id ? "Edit" : "Add"} menu failed !`);
+      sweetAlert.error(`${id ? "Edit" : "Add"} table failed !`);
 
       // reset form
       reset();
@@ -93,71 +85,46 @@ export default function MenuFormModal() {
 
   // handle submit update
   const onSubmit = async (data) => {
-    // set form and data edited
-    const form = new FormData();
-    let menu = {};
-
-    // conditional create or update
-    if (data.id) {
-      menu = {
-        id: data.id,
-        name: data.name,
-        price: data.price,
-      };
-    } else {
-      menu = {
-        name: data.name,
-        price: data.price,
-      };
-    }
-
-    form.append("menu", JSON.stringify(menu));
-
-    if (data.image) {
-      form.append("image", data.image[0]);
-    }
-
-    // service menu -> useMutation react query
-    await serviceMenu(form);
+    // service table -> useMutation react query
+    await serviceTable(data);
   };
 
-  // get menu by id
+  // get table by id
   useEffect(() => {
     // update form
     if (id) {
-      const getMenuById = async () => {
+      const getTableById = async () => {
         try {
           // set data to form
-          const response = await menuService.getById(id);
-          const currentMenu = response.data;
-          setValue("id", currentMenu.id);
-          setValue("name", currentMenu.name);
-          setValue("price", currentMenu.price);
+          const response = await tableService.getById(id);
+          const currentTable = response.data;
+          setValue("id", currentTable.id);
+          setValue("name", currentTable.name);
         } catch (error) {
           console.log(error);
         }
       };
-      getMenuById();
+      getTableById();
     }
-  }, [id, menuService, setValue]);
+  }, [id, tableService, setValue]);
 
   return (
     <>
-      {/* Modal Edit Menu */}
+      {/* Modal Edit Table */}
       <input
         className="modal-state"
-        id="modal-update-menu"
+        id="modal-update-table"
         type="checkbox"
         checked={true}
         readOnly
       />
       <div className="modal">
-        <label className="modal-overlay" htmlFor="modal-update-menu"></label>
+        <label className="modal-overlay" htmlFor="modal-update-table"></label>
         <div className="modal-content rounded-2xl flex flex-col gap-5">
           {/* Close Button Modal */}
-          <Link to={"/dashboard/menu"}>
+          <Link to={"/dashboard/table"}>
             <label
-              htmlFor="modal-update-menu"
+              htmlFor="modal-update-table"
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-7"
             >
               <svg
@@ -183,19 +150,19 @@ export default function MenuFormModal() {
               {/* Title Form */}
               <div className="flex flex-col text-center items-center">
                 <h1 className="text-3xl font-semibold pb-6">
-                  {id ? "Edit" : "Add"} Menu
+                  {id ? "Edit" : "Add"} Table
                 </h1>
                 <h2 className="text-2xl font-semibold pb-2">
                   {id ? "Update" : "Create"} here 📝
                 </h2>
                 <p className="text-sm pb-5">
                   {id ? "Update" : "Create"} your{" "}
-                  <span className="text-orange">menu </span>
+                  <span className="text-orange">table </span>
                   dish for your app management !
                 </p>
               </div>
 
-              {/* Menu Form */}
+              {/* Table Form */}
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="form-group">
                   <div className="form-field">
@@ -213,46 +180,6 @@ export default function MenuFormModal() {
                       <label className="form-label">
                         <span className="form-label-alt text-red">
                           {errors.name.message}
-                        </span>
-                      </label>
-                    )}
-                  </div>
-
-                  {/* Price Field */}
-                  <div className="form-field">
-                    <label className="form-label mb-1">Price</label>
-                    <input
-                      {...register("price")}
-                      placeholder="30xxxx"
-                      type="number"
-                      className={`input bg-grey max-w-full ${
-                        errors.price && "input-error"
-                      }`}
-                    />
-                    {errors.price && (
-                      <label className="form-label">
-                        <span className="form-label-alt text-red">
-                          {errors.price.message}
-                        </span>
-                      </label>
-                    )}
-                  </div>
-
-                  {/* Image Field */}
-                  <div className="form-field">
-                    <label className="form-label mb-1">Image</label>
-                    <input
-                      {...register("image")}
-                      size="20"
-                      type="file"
-                      className={`input bg-grey max-w-full py-1.5 text-xs ${
-                        errors.image && "input-error"
-                      }`}
-                    />
-                    {errors.image && (
-                      <label className="form-label">
-                        <span className="form-label-alt text-red">
-                          {errors.image.message}
                         </span>
                       </label>
                     )}

@@ -1,25 +1,32 @@
 import { useMemo } from "react";
-import { useSearchParams, Link, Outlet } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useQuery } from "@tanstack/react-query";
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import TransactionService from "@services/TransactionService";
+import TableService from "@services/TableService";
+import SweetAlert from "@shared/components/Modal/SweetAlert";
+
 
 // create schema for validator with zod
 const schema = z.object({
   search: z.optional(z.string()),
 });
 
-export default function TransactionList() {
-  // use state for data transactions and search params
+export default function TableList() {
+  // Access the client
+  const queryClient = useQueryClient();
+
+  // use state for data tables and search params
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // use service and sweet alert with useMemo -> prevent re-render
-  const transactionService = useMemo(() => TransactionService(), []);
+  // use service and utils with useMemo -> prevent re-render
+  const tableService = useMemo(() => TableService(), []);
+  const sweetAlert = useMemo(() => SweetAlert(), []);
 
   // use form hook with schema from zod resolver
   const { register, handleSubmit } = useForm({
@@ -28,49 +35,76 @@ export default function TransactionList() {
   });
 
   // search and pagination
-  const search = searchParams.get("userName" || "");
+  const search = searchParams.get("name" || "");
   const page = searchParams.get("page") || 1;
   const size = searchParams.get("size") || 10;
 
   // handle search and pagination
   const onSubmitSearch = ({ search }) => {
-    setSearchParams({ userName: search || "", page: 1, size: 10 });
+    setSearchParams({ name: search || "", page: 1, size: 10 });
   };
 
   const handleNextPage = (search) => {
-    setSearchParams({ userName: search || "", page: +page + 1, size: size });
+    setSearchParams({ name: search || "", page: +page + 1, size: size });
   };
 
   const handlePreviousPage = (search) => {
-    setSearchParams({ userName: search || "", page: +page - 1, size: size });
+    setSearchParams({ name: search || "", page: +page - 1, size: size });
   };
 
   const navigatePage = (search, page) => {
-    setSearchParams({ userName: search || "", page: page, size: size });
+    setSearchParams({ name: search || "", page: page, size: size });
   };
 
-  // get all transaction -> react query
+  // delete table -> useMutation react query
+  const { mutate: deleteTable } = useMutation({
+    mutationFn: async (id) => {
+      // alert confirmation with sweetalert
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this !",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#0072f5",
+        cancelButtonColor: "#f31260",
+        confirmButtonText: "Yes, Deleted !",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          // delete
+          const response = await tableService.deleteById(id);
+
+          // check response
+          if (response.statusCode === 200) {
+            // update cache tables
+            queryClient.invalidateQueries({ queryKey: ["tables"] });
+
+            // notification
+            sweetAlert.success("Table deleted !");
+          }
+        }
+      });
+    },
+  });
+
+  // get all table -> react query
   const { data, isLoading } = useQuery({
-    queryKey: ["transactions", search, page, size],
+    queryKey: ["tables", search, page, size],
     queryFn: async () => {
-      return await transactionService.getAll({
-        userName: search,
+      return await tableService.getAll({
+        name: search,
         page: page,
         size: size,
       });
     },
   });
 
-  // loading get all transaction -> react query
+  // loading get all table -> react query
   if (isLoading) {
     return <div className="loader"></div>;
   }
 
   return (
     <>
-      {/* Outlet for Modal Form */}
-      <Outlet />
-
       {/* Action Table */}
       <div className="flex flex-row justify-between gap-4 pt-6">
         {/* Size */}
@@ -78,7 +112,7 @@ export default function TransactionList() {
           <select
             onChange={(e) => {
               setSearchParams({
-                userName: search || "",
+                name: search || "",
                 page,
                 size: e.target.value,
               });
@@ -130,52 +164,42 @@ export default function TransactionList() {
           <thead>
             <tr>
               <th>No</th>
-              <th>Date</th>
               <th>Name</th>
-              <th>Username</th>
-              <th>Role</th>
-              <th>Table</th>
-              <th>Trans Type</th>
-              <th>Trans Status</th>
+              <th>Description</th>
+              <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {data.data.length > 0 ? (
               <>
-                {data.data.map((transaction, index) => (
-                  <tr key={transaction.id}>
+                {data.data.map((table, index) => (
+                  <tr key={table.id}>
                     {/* Index  */}
                     {page == 1 ? (
                       <td>{index + 1}</td>
                     ) : (
                       <td>{index + 1 + Number(size * (page - 1))}</td>
                     )}
-                    <td>{transaction.transDate}</td>
-                    <td>{transaction.user.name}</td>
-                    <td>{transaction.user.userAccount.username}</td>
-                    <td>{transaction.user.userAccount.roles[0].role}</td>
-                    <td>{transaction.table ? transaction.table.name : "-"}</td>
-                    <td>{transaction.transType.desc}</td>
-                    <td>{transaction.payment.transactionStatus}</td>
+                    <td>{table.name}</td>
+                    <td>-</td>
+                    <td>-</td>
                     <td>
                       <div className="flex gap-3">
-                        {/* Button Detail */}
+                        {/* Button Edit */}
                         <Link
-                          to={`/dashboard/transaction/detail/${transaction.id}`}
+                          to={`/dashboard/table/update/${table.id}`}
                           className="btn btn-outline-secondary btn-sm"
                         >
-                          Detail
+                          Edit
                         </Link>
-
-                        {/* Button Payment */}
-                        <a
-                          href={`${transaction.payment.redirectUrl}`}
-                          className="btn btn-outline-success btn-sm"
-                          target="_blank"
+                        {/* Button Delete */}
+                        <button
+                          onClick={() => deleteTable(table.id)}
+                          className="btn btn-outline-error btn-sm"
                         >
-                          Payment
-                        </a>
+                          Delete
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -184,7 +208,7 @@ export default function TransactionList() {
             ) : (
               <>
                 <tr>
-                  <td colSpan={9} className="bg-transparent">
+                  <td colSpan={7} className="bg-transparent">
                     <span className="flex justify-center">data not found.</span>
                   </td>
                 </tr>

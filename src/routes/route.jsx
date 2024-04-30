@@ -9,6 +9,7 @@ import Menu from "@pages/Menu/Menu";
 import MenuFormModal from "@pages/Menu/components/MenuFormModal";
 
 import Table from "@pages/Table/Table";
+import TableFormModal from "@pages/Table/components/TableFormModal";
 
 import User from "@pages/User/User";
 import UserForm from "@pages/User/components/UserForm";
@@ -66,6 +67,16 @@ const Router = createBrowserRouter([
       {
         path: "table",
         element: <Table />,
+        children: [
+          {
+            path: "add",
+            element: <TableFormModal />,
+          },
+          {
+            path: "update/:id",
+            element: <TableFormModal />,
+          },
+        ],
       },
       {
         path: "user",
