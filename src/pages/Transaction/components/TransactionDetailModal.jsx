@@ -70,11 +70,7 @@ export default function TransactionDetailModal() {
                   {/* Image */}
                   <div className="my-auto w-20">
                     <img
-                      src={
-                        transDetail.menu.image
-                          ? transDetail.menu.image
-                          : foodDefaultImg
-                      }
+                      src={transDetail.menu.image ? `/${transDetail.menu.image.url}` : foodDefaultImg}
                       alt="menuImg"
                     />
                   </div>
