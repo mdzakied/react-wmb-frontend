@@ -228,6 +228,7 @@ export default function MenuFormModal() {
                       className={`input bg-grey max-w-full ${
                         errors.price && "input-error"
                       }`}
+                      min={0}
                     />
                     {errors.price && (
                       <label className="form-label">
