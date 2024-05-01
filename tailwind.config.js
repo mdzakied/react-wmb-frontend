@@ -6,7 +6,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        dark: "#1f1d2b",
+        orange: "#ea7c69",
+        red: "#ff7ca3",
+        grey: "#2d303e",
+      },
+    },
   },
   plugins: [require("rippleui")],
 }

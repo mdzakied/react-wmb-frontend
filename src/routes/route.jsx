@@ -15,13 +15,15 @@ import User from "@pages/User/User";
 import UserForm from "@pages/User/components/UserForm";
 
 import Order from "@pages/Order/Order";
+import OrderAddDrawer from "@pages/Order/components/OrderAddDrawer";
+
 import Transaction from "@pages/Transaction/Transaction";
-import TransactionDetailModal from "@pages/Transaction/components/TransactionDetailModal";
+import TransactionDetailDrawer from "@pages/Transaction/components/TransactionDetailDrawer";
+
 import Account from "@pages/Account/Account";
 
 import ErrorBoundary from "@shared/components/Error/ErrorBoundary";
 import Error404 from "@shared/components/Error/Error404";
-
 
 const Router = createBrowserRouter([
   {
@@ -91,6 +93,12 @@ const Router = createBrowserRouter([
       {
         path: "order",
         element: <Order />,
+        children: [
+          {
+            path: "add",
+            element: <OrderAddDrawer />,
+          },
+        ],
       },
       {
         path: "transaction",
@@ -98,7 +106,7 @@ const Router = createBrowserRouter([
         children: [
           {
             path: "detail/:id",
-            element: <TransactionDetailModal />,
+            element: <TransactionDetailDrawer />,
           },
         ],
       },

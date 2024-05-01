@@ -1,6 +1,10 @@
 import axiosInstance from "../api/axiosInstance";
 
 const TransactionService = () => {
+  const create = async (payload) => {
+    const { data } = await axiosInstance.post("/transactions", payload);
+    return data;
+  };
   const getAll = async (query) => {
     const { data } = await axiosInstance.get(`/transactions`, { params: query });
     return data;
@@ -12,6 +16,7 @@ const TransactionService = () => {
   };
 
   return {
+    create,
     getAll,
     getById,
   };

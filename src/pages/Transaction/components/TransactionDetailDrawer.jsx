@@ -8,7 +8,7 @@ import NumberFormatter from "@shared/utils/NumberFormatter";
 
 import foodDefaultImg from "@assets/images/food-default.png";
 
-export default function TransactionDetailModal() {
+export default function TransactionDetailDrawer() {
   // use service and utils with useMemo -> prevent re-render
   const transactionService = useMemo(() => TransactionService(), []);
   const numberFormatter = useMemo(() => NumberFormatter(), []);
@@ -57,9 +57,7 @@ export default function TransactionDetailModal() {
               <h1 className="text-xl font-semibold mb-2">
                 Transaction Details
               </h1>
-              <h2 className="text-sm text-grey mb-4">
-                Transaction #{data.data.id}
-              </h2>
+              <h2 className="text-sm mb-4">Transaction #{data.data.id}</h2>
               <div className="divider-title w-full"></div>
             </div>
 
@@ -70,7 +68,11 @@ export default function TransactionDetailModal() {
                   {/* Image */}
                   <div className="my-auto w-20">
                     <img
-                      src={transDetail.menu.image ? `/${transDetail.menu.image.url}` : foodDefaultImg}
+                      src={
+                        transDetail.menu.image
+                          ? `/${transDetail.menu.image.url}`
+                          : foodDefaultImg
+                      }
                       alt="menuImg"
                     />
                   </div>
@@ -115,16 +117,20 @@ export default function TransactionDetailModal() {
                   <span className="my-auto">Sub Total :</span>
                 </div>
                 <div className="text-orange font-semibold">
-                  {numberFormatter.formatRupiah(
-                    data.data.transactionDetails.reduce((a, b) => {
-                      return a.price + b.price;
-                    })
-                  )}
+                  {data.data.transactionDetails.length === 1
+                    ? numberFormatter.formatRupiah(
+                        data.data.transactionDetails[0].price
+                      )
+                    : numberFormatter.formatRupiah(
+                        data.data.transactionDetails.reduce((a, b) => {
+                          return a.price + b.price;
+                        })
+                      )}
                 </div>
               </div>
             </div>
 
-            {/* Close Button Modal */}
+            {/* Close Button Drawer */}
             <div className="h-full flex flex-row justify-end items-end gap-2">
               <Link to={"/dashboard/transaction"}>
                 <button className="btn btn-sm bg-orange">Close</button>

@@ -29,30 +29,6 @@ html {
   background-color: #252836 !important;
 }
 
-.bg-dark {
-  background-color: $dark;
-}
-
-.bg-orange {
-  background-color: $orange;
-}
-
-.bg-grey {
-  background-color: $grey;
-}
-
-.text-dark {
-  color: $dark;
-}
-
-.text-orange {
-  color: $orange;
-}
-
-.text-red {
-  color: $red;
-}
-
 .divider-title {
   margin-top: 0.3rem;
   border-bottom: 2px solid white;
@@ -74,7 +50,6 @@ html {
 }
 
 // loading custom
-/* HTML: <div class="loader"></div> */
 /* HTML: <div class="loader"></div> */
 .loader {
   width: fit-content;

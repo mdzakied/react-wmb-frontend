@@ -1,31 +1,29 @@
 import { useMemo } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import Swal from "sweetalert2/dist/sweetalert2.js";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import PropTypes from "prop-types";
 
-import UserService from "@services/UserService";
-import SweetAlert from "@shared/components/Modal/SweetAlert";
+import MenuService from "@services/MenuService";
+import foodDefaultImg from "@assets/images/food-default.png";
+import NumberFormatter from "@shared/utils/NumberFormatter";
 
 // create schema for validator with zod
 const schema = z.object({
   search: z.optional(z.string()),
 });
 
-export default function UserList() {
-  // Access the client
-  const queryClient = useQueryClient();
-
-  // use state for data users and search params
+export default function OrderList({ handleAddToChart }) {
+  // use state for data menus and search params
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // use service and sweet alert with useMemo -> prevent re-render
-  const userService = useMemo(() => UserService(), []);
-  const sweetAlert = useMemo(() => SweetAlert(), []);
+  // use service and utils with useMemo -> prevent re-render
+  const menuService = useMemo(() => MenuService(), []);
+  const numberFormatter = useMemo(() => NumberFormatter(), []);
 
   // use form hook with schema from zod resolver
   const { register, handleSubmit } = useForm({
@@ -55,50 +53,19 @@ export default function UserList() {
     setSearchParams({ name: search || "", page: page, size: size });
   };
 
-  // delete user -> useMutation react query
-  const { mutate: deleteUser } = useMutation({
-    mutationFn: async (id) => {
-      // alert confirmation with sweetalert
-      Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this !",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#0072f5",
-        cancelButtonColor: "#f31260",
-        confirmButtonText: "Yes, Inactive !",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          // delete
-          const response = await userService.deleteById(id);
-
-          // check response
-          if (response.statusCode === 200) {
-            // update cache users
-            queryClient.invalidateQueries({ queryKey: ["users"] });
-
-            // notification
-            sweetAlert.success("Account inactive !");
-          }
-        }
+  // get all menu -> react query
+  const { data, isLoading } = useQuery({
+    queryKey: ["menus", search, page, size],
+    queryFn: async () => {
+      return await menuService.getAll({
+        name: search,
+        page: page,
+        size: size,
       });
     },
   });
 
-  // get all user -> react query
-  const { data, isLoading } = useQuery({
-    queryKey: ["users", search, page, size],
-    queryFn: async () => {
-      return await userService
-        .getAll({
-          name: search,
-          page: page,
-          size: size,
-        })
-    },
-  });
-
-  // loading get all user -> react query
+  // loading get all menu -> react query
   if (isLoading) {
     return <div className="loader"></div>;
   }
@@ -164,45 +131,45 @@ export default function UserList() {
           <thead>
             <tr>
               <th>No</th>
+              <th>Image</th>
               <th>Name</th>
-              <th>Phone Number</th>
-              <th>Username</th>
-              <th>Role</th>
-              <th>Status</th>
+              <th>Price</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {data.data.length > 0 ? (
               <>
-                {data.data.filter((user) => user.userAccount.roles[0].role !== "ROLE_SUPER_ADMIN").map((user, index) => (
-                  <tr key={user.id}>
+                {data.data.map((menu, index) => (
+                  <tr key={menu.id}>
                     {/* Index  */}
                     {page == 1 ? (
                       <td>{index + 1}</td>
                     ) : (
                       <td>{index + 1 + Number(size * (page - 1))}</td>
                     )}
-                    <td>{user.name}</td>
-                    <td>{user.phoneNumber ? user.phoneNumber : "-"}</td>
-                    <td>{user.userAccount.username}</td>
-                    <td>{user.userAccount.roles[0].role}</td>
-                    <td>{user.status ? "Active" : "Inactive"}</td>
+                    <td>
+                      <div className="my-auto">
+                        <img
+                          src={
+                            menu.image ? `/${menu.image.url}` : foodDefaultImg
+                          }
+                          alt="menu image"
+                          width={80}
+                          height={80}
+                        />
+                      </div>
+                    </td>
+                    <td>{menu.name}</td>
+                    <td>{numberFormatter.formatRupiah(menu.price)}</td>
                     <td>
                       <div className="flex gap-3">
                         {/* Button Edit */}
-                        <Link
-                          to={`/dashboard/user/update/${user.id}`}
+                        <button
+                          onClick={() => handleAddToChart(menu)}
                           className="btn btn-outline-secondary btn-sm"
                         >
-                          Edit
-                        </Link>
-                        {/* Button Inactive */}
-                        <button
-                          onClick={() => deleteUser(user.id)}
-                          className="btn btn-outline-error btn-sm"
-                        >
-                          Inactive
+                          Add to Cart
                         </button>
                       </div>
                     </td>
@@ -324,3 +291,7 @@ export default function UserList() {
     </>
   );
 }
+
+OrderList.propTypes = {
+  handleAddToChart: PropTypes.func,
+};
