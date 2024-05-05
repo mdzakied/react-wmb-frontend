@@ -41,7 +41,7 @@ export default function MenuList() {
   // search and pagination
   const search = searchParams.get("name" || "");
   const minPrice = searchParams.get("minPrice" || 0);
-  const maxPrice = searchParams.get("maxPrice" || 500000);
+  const maxPrice = searchParams.get("maxPrice" || 100000);
   const page = searchParams.get("page") || 1;
   const size = searchParams.get("size") || 10;
 
@@ -50,7 +50,7 @@ export default function MenuList() {
     setSearchParams({
       name: search || "",
       minPrice: minPrice || 0,
-      maxPrice: maxPrice || 500000,
+      maxPrice: maxPrice || 100000,
       page: 1,
       size: 10,
     });
@@ -60,7 +60,7 @@ export default function MenuList() {
     setSearchParams({
       name: search || "",
       minPrice: minPrice || 0,
-      maxPrice: maxPrice || 500000,
+      maxPrice: maxPrice || 100000,
       page: +page + 1,
       size: size,
     });
@@ -70,7 +70,7 @@ export default function MenuList() {
     setSearchParams({
       name: search || "",
       minPrice: minPrice || 0,
-      maxPrice: maxPrice || 500000,
+      maxPrice: maxPrice || 100000,
       page: +page - 1,
       size: size,
     });
@@ -80,7 +80,7 @@ export default function MenuList() {
     setSearchParams({
       name: search || "",
       minPrice: minPrice || 0,
-      maxPrice: maxPrice || 500000,
+      maxPrice: maxPrice || 100000,
       page: page,
       size: size,
     });
@@ -146,7 +146,7 @@ export default function MenuList() {
               setSearchParams({
                 name: search || "",
                 minPrice: minPrice || 0,
-                maxPrice: maxPrice || 500000,
+                maxPrice: maxPrice || 100000,
                 page,
                 size: e.target.value,
               });
@@ -195,58 +195,75 @@ export default function MenuList() {
 
             {/* Filter Price */}
             <div className="flex flex-row gap-3">
-              {/* Min Price */}
-              <div className="form-control">
-                <input
-                  {...register("minPrice")}
-                  type="number"
-                  className="input bg-grey pl-10"
-                  placeholder="Min Price"
-                />
+              <div className="flex flex-col">
+                {/* Min Price */}
+                <label
+                  htmlFor="minPrice"
+                  className="label text-sm font-semibold mb-1"
+                >
+                  Min Price :
+                </label>
+                <div className="form-control">
+                  <input
+                    {...register("minPrice")}
+                    type="number"
+                    className="input bg-grey pl-10"
+                    placeholder="Min Price"
+                  />
 
-                <span className="absolute inset-y-0 left-3 inline-flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                    />
-                  </svg>
-                </span>
+                  <span className="absolute inset-y-0 left-3 inline-flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                      />
+                    </svg>
+                  </span>
+                </div>
               </div>
 
-              {/* Max Price */}
-              <div className="form-control">
-                <input
-                  {...register("maxPrice")}
-                  type="number"
-                  className="input bg-grey pl-10"
-                  placeholder="Max Price"
-                />
+              <div className="flex flex-col">
+                {/* Max Price */}
+                <label
+                  htmlFor="maxPrice"
+                  className="label text-sm font-semibold mb-1"
+                >
+                  Max Price :
+                </label>
 
-                <span className="absolute inset-y-0 left-3 inline-flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                    />
-                  </svg>
-                </span>
+                <div className="form-control">
+                  <input
+                    {...register("maxPrice")}
+                    type="number"
+                    className="input bg-grey pl-10"
+                    placeholder="Max Price"
+                    defaultValue={maxPrice ? maxPrice : 100000}
+                  />
+                  <span className="absolute inset-y-0 left-3 inline-flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                      />
+                    </svg>
+                  </span>
+                </div>
               </div>
             </div>
 
