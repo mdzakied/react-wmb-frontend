@@ -41,7 +41,7 @@ export default function MenuList() {
   // search and pagination
   const search = searchParams.get("name" || "");
   const minPrice = searchParams.get("minPrice" || 0);
-  const maxPrice = searchParams.get("maxPrice" || 100000);
+  const maxPrice = searchParams.get("maxPrice" || 500000);
   const page = searchParams.get("page") || 1;
   const size = searchParams.get("size") || 10;
 
@@ -50,7 +50,7 @@ export default function MenuList() {
     setSearchParams({
       name: search || "",
       minPrice: minPrice || 0,
-      maxPrice: maxPrice || 100000,
+      maxPrice: maxPrice || 500000,
       page: 1,
       size: 10,
     });
@@ -60,7 +60,7 @@ export default function MenuList() {
     setSearchParams({
       name: search || "",
       minPrice: minPrice || 0,
-      maxPrice: maxPrice || 100000,
+      maxPrice: maxPrice || 500000,
       page: +page + 1,
       size: size,
     });
@@ -70,7 +70,7 @@ export default function MenuList() {
     setSearchParams({
       name: search || "",
       minPrice: minPrice || 0,
-      maxPrice: maxPrice || 100000,
+      maxPrice: maxPrice || 500000,
       page: +page - 1,
       size: size,
     });
@@ -80,7 +80,7 @@ export default function MenuList() {
     setSearchParams({
       name: search || "",
       minPrice: minPrice || 0,
-      maxPrice: maxPrice || 100000,
+      maxPrice: maxPrice || 500000,
       page: page,
       size: size,
     });
@@ -146,7 +146,7 @@ export default function MenuList() {
               setSearchParams({
                 name: search || "",
                 minPrice: minPrice || 0,
-                maxPrice: maxPrice || 100000,
+                maxPrice: maxPrice || 500000,
                 page,
                 size: e.target.value,
               });
@@ -229,7 +229,6 @@ export default function MenuList() {
                   type="number"
                   className="input bg-grey pl-10"
                   placeholder="Max Price"
-                  defaultValue={100000}
                 />
 
                 <span className="absolute inset-y-0 left-3 inline-flex items-center">
