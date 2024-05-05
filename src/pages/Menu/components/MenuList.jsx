@@ -16,6 +16,8 @@ import NumberFormatter from "@shared/utils/NumberFormatter";
 // create schema for validator with zod
 const schema = z.object({
   search: z.optional(z.string()),
+  minPrice: z.optional(z.string()),
+  maxPrice: z.optional(z.string()),
 });
 
 export default function MenuList() {
@@ -32,30 +34,56 @@ export default function MenuList() {
 
   // use form hook with schema from zod resolver
   const { register, handleSubmit } = useForm({
-    mode: "onChange",
+    mode: "onSubmit",
     resolver: zodResolver(schema),
   });
 
   // search and pagination
   const search = searchParams.get("name" || "");
+  const minPrice = searchParams.get("minPrice" || 0);
+  const maxPrice = searchParams.get("maxPrice" || 100000);
   const page = searchParams.get("page") || 1;
   const size = searchParams.get("size") || 10;
 
   // handle search and pagination
-  const onSubmitSearch = ({ search }) => {
-    setSearchParams({ name: search || "", page: 1, size: 10 });
+  const onSubmitSearch = ({ search, minPrice, maxPrice }) => {
+    setSearchParams({
+      name: search || "",
+      minPrice: minPrice || 0,
+      maxPrice: maxPrice || 100000,
+      page: 1,
+      size: 10,
+    });
   };
 
-  const handleNextPage = (search) => {
-    setSearchParams({ name: search || "", page: +page + 1, size: size });
+  const handleNextPage = (search, minPrice, maxPrice) => {
+    setSearchParams({
+      name: search || "",
+      minPrice: minPrice || 0,
+      maxPrice: maxPrice || 100000,
+      page: +page + 1,
+      size: size,
+    });
   };
 
-  const handlePreviousPage = (search) => {
-    setSearchParams({ name: search || "", page: +page - 1, size: size });
+  const handlePreviousPage = (search, minPrice, maxPrice) => {
+    setSearchParams({
+      name: search || "",
+      minPrice: minPrice || 0,
+      maxPrice: maxPrice || 100000,
+      page: +page - 1,
+      size: size,
+    });
   };
 
-  const navigatePage = (search, page) => {
-    setSearchParams({ name: search || "", page: page, size: size });
+  const navigatePage = (search, minPrice, maxPrice, page) => {
+    setSearchParams({
+      name: search || "",
+      minPrice: minPrice || 0,
+      maxPrice: maxPrice || 100000,
+      page: page,
+      size: size,
+    });
   };
 
   // delete menu -> useMutation react query
@@ -90,10 +118,12 @@ export default function MenuList() {
 
   // get all menu -> react query
   const { data, isLoading } = useQuery({
-    queryKey: ["menus", search, page, size],
+    queryKey: ["menus", search, minPrice, maxPrice, page, size],
     queryFn: async () => {
       return await menuService.getAll({
         name: search,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
         page: page,
         size: size,
       });
@@ -110,11 +140,13 @@ export default function MenuList() {
       {/* Action Table */}
       <div className="flex flex-row justify-between gap-4 pt-6">
         {/* Size */}
-        <div className="flex justify-start w-20">
+        <div className="flex justify-start items-end w-20">
           <select
             onChange={(e) => {
               setSearchParams({
                 name: search || "",
+                minPrice: minPrice || 0,
+                maxPrice: maxPrice || 100000,
                 page,
                 size: e.target.value,
               });
@@ -131,31 +163,98 @@ export default function MenuList() {
         {/* Search Bar */}
         <div className="flex justify-end">
           <form onSubmit={handleSubmit(onSubmitSearch)}>
-            <div className="form-control">
-              <input
-                {...register("search")}
-                type="text"
-                className="input bg-grey pl-10"
-                placeholder="Search by name"
-              />
+            {/* Search */}
+            <div className="flex flex-row justify-end mb-3">
+              {/* Name */}
+              <div className="form-control">
+                <input
+                  {...register("search")}
+                  type="text"
+                  className="input bg-grey pl-10"
+                  placeholder="Search by name"
+                />
 
-              <span className="absolute inset-y-0 left-3 inline-flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                  />
-                </svg>
-              </span>
+                <span className="absolute inset-y-0 left-3 inline-flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                    />
+                  </svg>
+                </span>
+              </div>
             </div>
+
+            {/* Filter Price */}
+            <div className="flex flex-row gap-3">
+              {/* Min Price */}
+              <div className="form-control">
+                <input
+                  {...register("minPrice")}
+                  type="number"
+                  className="input bg-grey pl-10"
+                  placeholder="Min Price"
+                />
+
+                <span className="absolute inset-y-0 left-3 inline-flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                    />
+                  </svg>
+                </span>
+              </div>
+
+              {/* Max Price */}
+              <div className="form-control">
+                <input
+                  {...register("maxPrice")}
+                  type="number"
+                  className="input bg-grey pl-10"
+                  placeholder="Max Price"
+                  defaultValue={100000}
+                />
+
+                <span className="absolute inset-y-0 left-3 inline-flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button type="submit" className="btn hidden">
+              Search
+            </button>
           </form>
         </div>
       </div>
@@ -253,7 +352,7 @@ export default function MenuList() {
               {/* Previous */}
               <button
                 disabled={!data.paging.hasPrevious}
-                onClick={() => handlePreviousPage(search)}
+                onClick={() => handlePreviousPage(search, minPrice, maxPrice)}
                 className="btn bg-grey"
               >
                 <svg
@@ -275,13 +374,14 @@ export default function MenuList() {
               {/* Pages */}
               <button
                 className={`btn ${page == 1 ? "bg-orange" : "bg-grey"}`}
-                onClick={() => navigatePage(search, 1)}
+                onClick={() => navigatePage(search, minPrice, maxPrice, 1)}
               >
                 1
               </button>
               <button disabled className={`btn ${page <= 2 ? "hidden" : ""}`}>
                 ...
               </button>
+              {/* First Page */}
               <button
                 className={`btn bg-orange ${
                   page == 1 || page == data.paging.totalPages ? "hidden" : ""
@@ -300,11 +400,19 @@ export default function MenuList() {
               >
                 ...
               </button>
+              {/* Last Page */}
               <button
                 className={`btn ${
                   page == data.paging.totalPages ? "bg-orange" : "bg-grey"
                 } ${data.paging.totalPages == 1 ? "hidden" : ""}`}
-                onClick={() => navigatePage(search, data.paging.totalPages)}
+                onClick={() =>
+                  navigatePage(
+                    search,
+                    minPrice,
+                    maxPrice,
+                    data.paging.totalPages
+                  )
+                }
               >
                 {data.paging.totalPages}
               </button>
@@ -312,7 +420,7 @@ export default function MenuList() {
               {/* Next */}
               <button
                 disabled={!data.paging.hasNext}
-                onClick={() => handleNextPage(search)}
+                onClick={() => handleNextPage(search, minPrice, maxPrice)}
                 className="btn bg-grey"
               >
                 <svg
