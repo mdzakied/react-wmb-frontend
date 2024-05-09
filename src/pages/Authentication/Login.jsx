@@ -58,6 +58,9 @@ export default function Login() {
       if (error.response.status == 500) {
         // notification
         sweetAlert.error("Internal server error !");
+      } else if (error.response.data.message === "User is disabled") {
+        // notification
+        sweetAlert.info("User is disabled, please contact admin or super admin !");
       } else {
         // notification
         sweetAlert.error("Username or password is incorrect !");

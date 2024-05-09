@@ -188,15 +188,12 @@ export default function UserList() {
                     <td>{user.userAccount.roles[0].role}</td>
                     <td>{user.status ? "Active" : "Inactive"}</td>
                     <td>
-                      {user.userAccount.username === "superadmin" ? (
+                      {user.userAccount.username === "superadmin" || user.status == false ? (
                         <></>
                       ) : (
                         <div className="flex gap-3">
                           {/* Button Edit */}
                           <Link
-                            disabled={
-                              user.userAccount.username === "superadmin"
-                            }
                             to={`/dashboard/user/update/${user.id}`}
                             className="btn btn-outline-secondary btn-sm"
                           >
