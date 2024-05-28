@@ -54,7 +54,16 @@ Here're some of the project's best features :
     * Export Data Transaction to CSV with Filter Above
     * Export Data Transaction to PDF with Filter Above
 
-  
+
+<br />
+<h2>🖥️ Layout</h2>
+
+Here're project's layout :
+
+[wmb-layout](https://www.figma.com/design/Z4z9M4h7ppFyMol8TQptl2/WMB?m=auto&t=CQVf38qeL5oH7HCm-6)
+
+<br />
+
 <h2>🛠️ Installation Steps :</h2>
 
 <p>1. Clone Repository</p>
@@ -69,7 +78,7 @@ git clone https://github.com/mdzakied/react-wmb-frontend.git
 [springboot-wmb-backend](https://github.com/mdzakied/springboot-wmb-backend)
 
 <br />
-<p>4. Run Project for Development</p>
+<p>3. Run Project for Development</p>
 
 * pnpm install
   
