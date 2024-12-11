@@ -1,4 +1,4 @@
-<h1 align="center" id="title">react-wmb-fronted</h1>
+<h1 align="center" id="title">react-wmb-frontend</h1>
 
 
 <p align="center" id="description">Demo web app for managing data resto 'warung makan bahari'.</p>
