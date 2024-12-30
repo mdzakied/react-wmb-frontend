@@ -1,68 +1,36 @@
 <h1 align="center" id="title">react-wmb-frontend</h1>
 
+<p align="center" id="description">Web app for managing restaurant 'warung makan bahari' data and operations with role-based authentication.</p>
 
-<p align="center" id="description">Web app for managing data resto 'warung makan bahari'.</p>
+## 🌟 Project Overview
 
+The **Warung Makan Bahari** is a web application designed to manage restaurant data for **"Warung Makan Bahari."** The app includes features for user authentication with Superadmin and Admin roles, ensuring secure access to restaurant data management. It supports CRUD operations for managing menus, tables, users, and transactions. 🍽️🔑
 
-<h2>🧐 Features</h2>
+### Key Features:
+- **User Authentication 🔑:** Secure login and role-based access control for Superadmin and Admin roles.
+- **CRUD Operations 🍴:** Manage menus, tables, users, and transactions with intuitive interfaces.
+- **Responsive UI 📱:** A user-friendly interface built with React.js, Tailwind CSS, and RippleUI for a seamless experience.
+- **Backend Interaction 🔄:** Communicates with the backend via RESTful API to handle data management, user authentication, and authorization.
 
-Here're some of the project's best features :
+---
 
-*  Login Page :
-    * Login Superadmin and Admin
-    
-*  Menu Page :
-    * Add Menu with Optional Upload Image
-    * Get All Menu with Pagination
-    * Get Menu with Filter :
-        * Menu Name
-        * Min Price
-        * Max Price
-    * Edit Menu with Optional Upload Image
-    * Delete Menu
-      
-* Table Page :
-    * Add Table
-    * Get All Table with Pagination
-    * Get Table with Filter :
-        * Name
-    * Edit Table
-    * Delete Table
+## ⚙️ Technologies Used
 
-* User Page :
-    * Add Customer 
-    * Add Admin (Authorization Superadmin)
-    * Get All User with Pagination
-    * Get User with Filter :          
-        * Name
-    * Edit User
-    * Delete User (soft delete)
- 
-* Order Page :
-    * Get All Menu
-    * Get Menu with Filter Name
-    * Add to Cart
-    * Add Order 
-     
-* Transaction Page :
-    * Get All Transaction with Pagination
-    * Get Transaction with Filter :          
-        * User Name
-        * Start Transaction Date
-        * End Transaction Date
-    * Get Transaction Detail      
-    * Export Data Transaction to CSV with Filter Above
-    * Export Data Transaction to PDF with Filter Above
+- **Frontend 💻:** React.js for building the user interface.
+- **Styling 🎨:** Tailwind CSS for responsive design.
+- **UI Components 🖌️:** RippleUI for enhanced UI components.
+- **Backend 🖥️:** Interacts with a backend via RESTful API for managing restaurant data and user information.
+- **Authentication 🔐:** Implemented via JWT for secure user login and role-based access control.
 
+---
 
-<br />
 <h2>🖥️ Layout</h2>
 
 Here're project's layout :
 
 [wmb-layout](https://www.figma.com/design/Z4z9M4h7ppFyMol8TQptl2/WMB?m=auto&t=CQVf38qeL5oH7HCm-6)
 
-<br />
+---
 
 <h2>🛠️ Installation Steps :</h2>
 
@@ -92,24 +60,4 @@ git clone https://github.com/mdzakied/react-wmb-frontend.git
   pnpm run dev
   ```
   
-<h2>💻 Built with</h2>
-
-Technologies used in the project :
-
-*   Vite
-*   Javascript
-*   React.js
-*   react-dom
-*   react-hook-form
-*   react-router-dom
-*   prop-types
-*   zod
-*   @hookform/resolvers
-*   axios
-*   @tanstack/react-query
-*   saas
-*   postcss
-*   tailwindcss
-*   rippleui
-*   sweetalert2
-*   sweetalert2/theme-dark
+---
