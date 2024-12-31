@@ -4,7 +4,7 @@
 
 ## 🌟 Project Overview
 
-The **Warung Makan Bahari** is a web application designed to manage restaurant data for **"Warung Makan Bahari."** The app includes features for user authentication with Superadmin and Admin roles, ensuring secure access to restaurant data management. It supports CRUD operations for managing menus, tables, users, and transactions. 🍽️🔑
+The **Warung Makan Bahari** is a web application designed to manage restaurant data for **"Warung Makan Bahari."** The app includes features for user authentication with Superadmin and Admin roles, ensuring secure access to restaurant data management. It supports CRUD operations for managing menus, tables, users, and transactions.
 
 ### Key Features:
 - **User Authentication 🔑:** Secure login and role-based access control for Superadmin and Admin roles.
