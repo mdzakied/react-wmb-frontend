@@ -19,6 +19,7 @@ The **Warung Makan Bahari** is a web application designed to manage restaurant d
 - **Frontend 💻:** React.js for building the user interface.
 - **Styling 🎨:** Tailwind CSS for responsive design.
 - **UI Components 🖌️:** RippleUI for enhanced UI components.
+- **Data Fetching 📡** : Axios for HTTP requests and TanStack Query for efficient server state management.
 - **Backend 🖥️:** Interacts with a backend via RESTful API for managing restaurant data and user information.
 - **Authentication 🔐:** Implemented via JWT for secure user login and role-based access control.
 
